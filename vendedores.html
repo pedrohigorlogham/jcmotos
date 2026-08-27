@@ -1,0 +1,173 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Fale com Nossos Mecânicos - JC MOTOS</title>
+    <style>
+        body {
+            background-color: #121212;
+            color: #ffffff;
+            font-family: Arial, sans-serif;
+            margin: 0;
+            padding: 0 20px 40px;
+        }
+        .site-header {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            max-width: 1000px;
+            margin: 0 auto 40px;
+            min-height: 110px;
+            border-bottom: 2px solid #ff1a1a;
+        }
+        .logo {
+            width: 150px;
+            height: auto;
+            object-fit: contain;
+        }
+        .page-heading {
+            text-align: center;
+            margin-bottom: 40px;
+        }
+        h1 {
+            color: #ff1a1a;
+            margin: 0;
+        }
+        .btn-voltar {
+            display: inline-block;
+            color: #ffffff;
+            text-decoration: none;
+            margin-bottom: 20px;
+            font-weight: bold;
+        }
+        .btn-voltar:hover {
+            color: #ff1a1a;
+        }
+        /* Grade de mecânicos */
+        .vendedores-container {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+            gap: 25px;
+            max-width: 900px;
+            margin: 0 auto;
+        }
+        .vendedor-card {
+            background-color: #1c1c1c;
+            border: 1px solid #333;
+            border-radius: 8px;
+            padding: 20px;
+            text-align: center;
+            transition: transform 0.2s;
+        }
+        .vendedor-card:hover {
+            transform: translateY(-5px);
+            border-color: #ff1a1a;
+        }
+        /* Círculo para foto do mecânico */
+        .vendedor-img-container {
+            width: 120px;
+            height: 120px;
+            margin: 0 auto 15px auto;
+            border-radius: 50%;
+            overflow: hidden;
+            background-color: #333;
+            border: 2px solid #ff1a1a;
+        }
+        .vendedor-img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+        }
+        .vendedor-nome {
+            font-size: 1.3rem;
+            margin: 10px 0 5px 0;
+        }
+        .vendedor-cargo {
+            color: #888;
+            font-size: 0.9rem;
+            margin-bottom: 20px;
+        }
+        .btn-wpp {
+            display: block;
+            background-color: #25d366; /* Verde do WhatsApp */
+            color: white;
+            text-decoration: none;
+            padding: 12px;
+            border-radius: 4px;
+            font-weight: bold;
+            transition: background-color 0.2s;
+        }
+        .btn-wpp:hover {
+            background-color: #128c7e;
+        }
+        @media (max-width: 600px) {
+            .site-header {
+                min-height: auto;
+                padding: 16px 0;
+            }
+            .logo { width: 110px; }
+            .btn-voltar { font-size: 0.9rem; }
+        }
+    </style>
+</head>
+<body>
+
+    <header class="site-header">
+        <a href="index.html" aria-label="Voltar para a página inicial">
+            <img src="logo.png" alt="JC Motos" class="logo">
+        </a>
+        <a href="index.html" class="btn-voltar">← Página Inicial</a>
+    </header>
+
+    <section class="page-heading">
+        <h1>👋 Fale com um dos nossos mecânicos</h1>
+        <p>Escolha um de nossos mecânicos para iniciar o seu atendimento personalizado</p>
+    </section>
+
+    <main class="vendedores-container">
+        
+        <!-- MECÂNICO 1 (Guilherme) -->
+        <div class="vendedor-card">
+            <div class="vendedor-img-container">
+                <img src="logo.png" alt="Logo JC Motos" class="vendedor-img">
+            </div>
+            <h2 class="vendedor-nome">Guilherme</h2>
+            <p class="vendedor-cargo">Mecânico</p>
+            <a href="https://wa.me/5562994744564?text=Ol%C3%A1%2C%20Guilherme!%20Vim%20pelo%20site%20JC%20e%20gostaria%20de%20agendar%20um%20atendimento%20para%20minha%20moto." target="_blank" rel="noopener noreferrer" class="btn-wpp">Agendar com Guilherme</a>
+        </div>
+
+        <!-- MECÂNICO 2 (Sebastiao) -->
+        <div class="vendedor-card">
+            <div class="vendedor-img-container">
+                <img src="logo.png" alt="Logo JC Motos" class="vendedor-img">
+            </div>
+            <h2 class="vendedor-nome">Sebastiao</h2>
+            <p class="vendedor-cargo">Mecânico</p>
+            <a href="https://wa.me/5562993656299?text=Ol%C3%A1%2C%20Sebastiao!%20Vim%20pelo%20site%20JC%20e%20gostaria%20de%20agendar%20um%20atendimento%20para%20minha%20moto." target="_blank" rel="noopener noreferrer" class="btn-wpp">Agendar com Sebastiao</a>
+        </div>
+
+        <!-- MECÂNICO 3 (Luan) -->
+        <div class="vendedor-card">
+            <div class="vendedor-img-container">
+                <img src="logo.png" alt="Logo JC Motos" class="vendedor-img">
+            </div>
+            <h2 class="vendedor-nome">Luan</h2>
+            <p class="vendedor-cargo">Mecânico</p>
+            <a href="https://wa.me/5562981300792?text=Ol%C3%A1%2C%20Luan!%20Vim%20pelo%20site%20JC%20e%20gostaria%20de%20agendar%20um%20atendimento%20para%20minha%20moto." target="_blank" rel="noopener noreferrer" class="btn-wpp">Agendar com Luan</a>
+        </div>
+
+        <!-- MECÂNICO 4 (Abdiel) -->
+        <div class="vendedor-card">
+            <div class="vendedor-img-container">
+                <img src="logo.png" alt="Logo JC Motos" class="vendedor-img">
+            </div>
+            <h2 class="vendedor-nome">Abdiel</h2>
+            <p class="vendedor-cargo">Mecânico</p>
+            <a href="https://wa.me/5562993640872?text=Ol%C3%A1%2C%20Abdiel!%20Vim%20pelo%20site%20JC%20e%20gostaria%20de%20agendar%20um%20atendimento%20para%20minha%20moto." target="_blank" rel="noopener noreferrer" class="btn-wpp">Agendar com Abdiel</a>
+        </div>
+
+    </main>
+
+</body>
+</html>

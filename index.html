@@ -1,0 +1,432 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>JC Motos - Oficina e Peças</title>
+    <!-- Ícones do FontAwesome -->
+    <link rel="stylesheet" href="https://cloudflare.com">
+    
+    <!-- DESIGN FIXO EM CSS NATIVO (Blindado contra bugs de carregamento) -->
+    <style>
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+        body {
+            background-color: #09090b !important;
+            color: #f4f4f5 !important;
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+            line-height: 1.6;
+        }
+        
+        /* Cabeçalho */
+        header {
+            background-color: #000000 !important;
+            border-bottom: 4px solid #dc2626 !important;
+            position: sticky;
+            top: 0;
+            z-index: 50;
+            width: 100%;
+        }
+        .nav-container {
+            max-width: 1320px;
+            margin: 0 auto;
+            padding: 35px 24px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        .nav-menu {
+            display: flex;
+            gap: 36px;
+            margin-left: auto;
+            margin-right: 32px;
+        }
+        @media (max-width: 768px) {
+            .nav-menu { display: none; }
+        }
+        .nav-menu a {
+            color: #f4f4f5 !important;
+            text-decoration: none;
+            font-size: 18px;
+            font-weight: 700;
+            transition: color 0.2s;
+        }
+        .nav-menu a:hover {
+            color: #ef4444 !important;
+        }
+/* Animacão e Tamanho da Logo Desvinculada da Barra */
+@keyframes floatSlow {
+    0% { transform: translateY(0px); }
+    50% { transform: translateY(-6px); }
+    100% { transform: translateY(0px); }
+}
+
+.logo-flutuante {
+    animation: floatSlow 5s ease-in-out infinite;
+    position: absolute; /* TRUQUE DE IA: Desvincula a logo da barra preta */
+    top: -52%;           /* Centraliza verticalmente na barra */
+    transform: translateY(-50%); /* Ajuste fino da centralizacão */
+    left: 24px;         /* Distância do canto esquerdo do site */
+    z-index: 100;       /* Garante que ela fica por cima de tudo */
+    
+    /* VALOR DE CONTROLE MANUAL: Pode aumentar ou diminuir esse número à vontade agora */
+    height: 250px !important; 
+    width: auto !important;
+    display: block;
+    object-fit: contain;
+}
+
+       /* Botão do WhatsApp Estilo Neon Verde */
+.btn-whatsapp {
+    background-color: #10b981 !important;
+    color: #ffffff !important;
+    font-weight: 800;
+    padding: 12px 26px;
+    border-radius: 50px;
+    text-decoration: none;
+    font-size: 16px;
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    /* Efeito Neon de Luz Expandida */
+    box-shadow: 0 0 15px #10b981, 0 0 30px rgba(16, 185, 129, 0.4);
+    text-shadow: 0 1px 2px rgba(0, 0, 0, 0.3);
+    transition: all 0.3s ease;
+}
+
+.btn-whatsapp:hover {
+    background-color: #059669 !important;
+    transform: scale(1.05);
+    box-shadow: 0 0 25px #10b981, 0 0 40px rgba(16, 185, 129, 0.6);
+}
+
+        
+
+        /* Banner Principal (Hero) */
+        .hero {
+            background-color: #18181b !important;
+            padding: 96px 16px;
+            text-align: center;
+            border-bottom: 1px solid #27272a;
+        }
+        .hero-container {
+            max-width: 768px;
+            margin: 0 auto;
+        }
+        .hero-tag {
+            color: #ef4444;
+            font-weight: 800;
+            text-transform: uppercase;
+            letter-spacing: 1.5px;
+            font-size: 14px;
+        }
+        .hero h2 {
+            font-size: 44px;
+            font-weight: 900;
+            margin-top: 12px;
+            margin-bottom: 16px;
+            letter-spacing: -0.5px;
+            line-height: 1.2;
+        }
+        .hero p {
+            color: #a1a1aa;
+            font-size: 18px;
+            margin-bottom: 32px;
+        }
+        .btn-outline {
+            border: 2px solid #dc2626;
+            color: #ffffff;
+            font-weight: bold;
+            padding: 14px 28px;
+            border-radius: 8px;
+            text-decoration: none;
+            display: inline-block;
+            transition: background-color 0.2s;
+        }
+        .btn-outline:hover {
+            background-color: #dc2626;
+        }
+
+        /* Seção de Serviços */
+        .servicos-section {
+            padding: 80px 16px;
+            max-width: 1152px;
+            margin: 0 auto;
+        }
+        .servicos-section h3 {
+            font-size: 36px;
+            font-weight: 900;
+            text-align: center;
+            margin-bottom: 64px;
+        }
+        .servicos-section h3 span {
+            color: #dc2626;
+        }
+        .grid-servicos {
+            display: grid;
+            grid-template-columns: 1fr;
+            gap: 32px;
+        }
+        @media (min-width: 768px) {
+            .grid-servicos { grid-template-columns: repeat(3, 1fr); }
+        }
+        .card {
+            background-color: #18181b;
+            border: 1px solid #27272a;
+            padding: 32px;
+            border-radius: 16px;
+            display: flex;
+            flex-direction: column;
+            justify-content: space-between;
+            transition: border-color 0.3s;
+        }
+        .card:hover {
+            border-color: #dc2626;
+        }
+        .card-icon {
+            color: #dc2626;
+            font-size: 36px;
+            margin-bottom: 20px;
+        }
+        .card h4 {
+            font-size: 22px;
+            font-weight: 900;
+            margin-bottom: 12px;
+        }
+        .card p {
+            color: #a1a1aa;
+            font-size: 15px;
+            margin-bottom: 24px;
+            line-height: 1.6;
+        }
+        .card a {
+            color: #f87171;
+            text-decoration: none;
+            font-weight: 700;
+            font-size: 15px;
+        }
+        .card a:hover {
+            text-decoration: underline;
+        }
+        .produtos-home { padding: 0 0 80px; overflow: hidden; }
+        .produtos-home__titulo { max-width: 1152px; margin: 0 auto 30px; padding: 0 16px; text-align: center; }
+        .produtos-home__titulo h3 { font-size: 36px; font-weight: 900; margin-bottom: 8px; }
+        .produtos-home__titulo h3 span { color: #dc2626; }
+        .produtos-home__titulo p { color: #a1a1aa; }
+        .produtos-carrossel { overflow: hidden; mask-image: linear-gradient(to right, transparent, #000 5%, #000 95%, transparent); }
+        .produtos-carrossel__faixa { display: flex; gap: 18px; width: max-content; animation: deslizarProdutos 36s linear infinite; padding: 4px 9px; }
+        .produtos-carrossel:hover .produtos-carrossel__faixa { animation-play-state: paused; }
+        .produto-home { display: block; width: 242px; overflow: hidden; border: 1px solid #27272a; border-radius: 12px; background: #18181b; color: #fff; text-decoration: none; transition: transform .2s, border-color .2s; }
+        .produto-home:hover { transform: translateY(-5px); border-color: #dc2626; }
+        .produto-home img { display: block; width: 100%; height: 155px; object-fit: cover; background: #27272a; }
+        .produto-home div { padding: 14px; }
+        .produto-home strong, .produto-home span { display: block; }
+        .produto-home strong { white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+        .produto-home span { margin-top: 6px; color: #f87171; font-weight: 800; }
+        .produtos-home__vazio { color: #a1a1aa; text-align: center; }
+        @keyframes deslizarProdutos { to { transform: translateX(calc(-50% - 9px)); } }
+        @media (prefers-reduced-motion: reduce) { .produtos-carrossel__faixa { animation: none; } }
+        @media (max-width: 767px) {
+            .nav-container { min-height: 84px; padding: 12px 16px; justify-content: space-between; }
+            .logo-flutuante { position: static; height: 82px !important; transform: none; animation: none; }
+            .btn-whatsapp { padding: 10px 14px; font-size: 13px; white-space: nowrap; }
+            .hero { padding: 64px 18px; }
+            .hero h2 { font-size: 32px; }
+            .hero p { font-size: 16px; }
+            .servicos-section { padding: 56px 16px; }
+            .servicos-section h3, .produtos-home__titulo h3 { font-size: 28px; }
+            .servicos-section h3 { margin-bottom: 34px; }
+            .card { padding: 26px; }
+            .produto-home { width: 210px; }
+            .produto-home img { height: 136px; }
+            .quick-chat { right: 12px; bottom: 84px; }
+            .chat-launcher { right: 14px; bottom: 14px; }
+        }
+        @media (max-width: 380px) {
+            .logo-flutuante { height: 66px !important; }
+            .btn-whatsapp { padding: 9px 10px; font-size: 12px; }
+            .btn-whatsapp i { display: none; }
+        }
+
+        /* Rodapé */
+        footer {
+            background-color: #000000;
+            border-top: 1px solid #27272a;
+            padding: 64px 16px;
+            text-align: center;
+            color: #71717a;
+            font-size: 14px;
+        }
+        footer h4 {
+            color: #ffffff;
+            font-size: 20px;
+            font-weight: 900;
+            margin-bottom: 12px;
+            letter-spacing: 1px;
+        }
+        footer p {
+            margin-bottom: 8px;
+            font-size: 15px;
+        }
+        .whatsapp-footer {
+            color: #e4e4e7;
+            font-weight: 700;
+            font-size: 18px !important;
+            margin-top: 16px;
+            margin-bottom: 24px !important;
+        }
+        .whatsapp-footer i {
+            color: #10b981;
+            margin-right: 6px;
+        }
+        .chat-launcher { position: fixed; right: 20px; bottom: 20px; width: 60px; height: 60px; border: 0; border-radius: 50%; background: #dc2626; color: #fff; cursor: pointer; z-index: 9999; font-size: 25px; box-shadow: 0 8px 24px rgba(220,38,38,.45); transition: transform .2s, background-color .2s; }
+        .chat-launcher:hover { background: #b91c1c; transform: scale(1.06); }
+        .quick-chat { position: fixed; right: 20px; bottom: 92px; width: min(350px, calc(100vw - 32px)); background: #fff; color: #27272a; border-radius: 14px; overflow: hidden; z-index: 9999; box-shadow: 0 12px 34px rgba(0,0,0,.35); }
+        .quick-chat[hidden] { display: none; }
+        .quick-chat__header { display: flex; align-items: center; justify-content: space-between; padding: 16px; background: #dc2626; color: #fff; }
+        .quick-chat__header strong, .quick-chat__header span { display: block; }
+        .quick-chat__header span { font-size: 13px; opacity: .9; }
+        .quick-chat__close { border: 0; background: transparent; color: #fff; cursor: pointer; font-size: 22px; }
+        .quick-chat__body { padding: 18px; }
+        .quick-chat__body p { margin: 0 0 14px; }
+        .quick-chat__options { display: grid; gap: 10px; }
+        .quick-chat__option { display: block; padding: 13px 14px; border: 1px solid #e4e4e7; border-radius: 9px; color: #27272a; text-decoration: none; font-weight: 700; transition: background-color .2s, border-color .2s; }
+        .quick-chat__option:hover { background: #fef2f2; border-color: #dc2626; }
+    </style>
+</head>
+<body>
+
+    <!-- CABEÇALHO (NAVBAR) -->
+    <header>
+        <div class="nav-container">
+            <!-- LOGO INTEGRADA -->
+            <a href="#inicio">
+                <img src="logo.png" alt="JC Motos Logo" class="logo-flutuante">
+            </a>
+            
+            <!-- MENU COM O LINK ATUALIZADO PARA CATALOGO.HTML -->
+            <nav class="nav-menu">
+                <a href="#inicio">Início</a>
+                <a href="#servicos">Serviços</a>
+                <a href="catalogo.html">Produtos</a> <!-- Alterado para abrir o catálogo -->
+                <a href="#contato">Contato</a>
+            </nav>
+            
+            <!-- BOTÃO WHATSAPP BALÃO VERDE -->
+            <a href="https://wa.me/5562994613292?text=Ol%C3%A1%21%20Vim%20pelo%20site%20JC%20Motos%20e%20gostaria%20de%20atendimento." target="_blank" rel="noopener noreferrer" class="btn-whatsapp">
+                <i class="fab fa-whatsapp"></i> Fale Conosco
+            </a>
+        </div>
+    </header>
+
+    <!-- BANNER PRINCIPAL (HERO) -->
+    <section id="inicio" class="hero">
+        <div class="hero-container">
+            <span class="hero-tag">Mecânica de Alta Performance</span>
+            <h2>Cuidamos da sua moto com a paixão que você anda.</h2>
+            <p>Revisão geral, troca de óleo, pastilhas, pneus e acessórios originais para todas as marcas.</p>
+            <a href="#servicos" class="btn-outline">Ver Serviços</a>
+        </div>
+    </section>
+
+    <!-- SEÇÃO DE SERVIÇOS -->
+    <section id="servicos" class="servicos-section">
+        <h3>Nossos <span>Serviços e Peças</span></h3>
+        
+        <div class="grid-servicos">
+            <!-- Item 1 - Auxílio Mecânico -->
+            <div class="card">
+                <div>
+                    <div class="card-icon"><i class="fas fa-tools"></i></div>
+                    <h4>Auxílio Mecânico</h4>
+                    <p>Sua moto parou ou apresentou algum problema na rua? Entre em contato agora mesmo para acionar o nosso suporte e falar direto com um mecânico de plantão.</p>
+                </div>
+                <a href="vendedores.html">Falar com um Mecânico →</a>
+            </div>
+
+            <!-- Item 2 - Falar com um Vendedor -->
+            <div class="card">
+                <div>
+                    <div class="card-icon"><i class="fas fa-shopping-bag"></i></div>
+                    <h4>Fale com um dos nossos vendedores</h4>
+                    <p>Precisa de peças, pneus ou acessórios? Fale com a nossa equipe de vendas para consultar disponibilidade.</p>
+                </div>
+                <a href="https://wa.me/5562994613292?text=Ol%C3%A1%21%20Vim%20pelo%20site%20JC%20Motos%20e%20gostaria%20de%20falar%20com%20um%20vendedor." target="_blank" rel="noopener noreferrer">Fale com um dos nossos vendedores →</a>
+            </div>
+
+            <!-- Item 3 - Catálogo Digital COM O LINK ATUALIZADO PARA CATALOGO.HTML -->
+            <div class="card">
+                <div>
+                    <div class="card-icon"><i class="fas fa-motorcycle"></i></div>
+                    <h4>Catálogo Digital</h4>
+                    <p>Confira todo o nosso estoque de peças, pneus e acessórios sem sair de casa. Clique abaixo para consultar a disponibilidade com nossos atendentes.</p>
+                </div>
+                <a href="catalogo.html">Acessar o Catálogo →</a>
+            </div>
+        </div>
+    </section>
+
+    <section class="produtos-home" aria-labelledby="produtos-home-titulo">
+        <div class="produtos-home__titulo">
+            <h3 id="produtos-home-titulo">Nossos <span>Produtos</span></h3>
+            <p>Confira alguns itens do catálogo. Clique em um produto para ver os detalhes.</p>
+        </div>
+        <div class="produtos-carrossel" aria-live="polite">
+            <div class="produtos-carrossel__faixa" id="faixaProdutos"><p class="produtos-home__vazio">Carregando produtos...</p></div>
+        </div>
+    </section>
+
+    <!-- RODAPÉ -->
+    <footer id="contato">
+        <h4>JC MOTOS</h4>
+        <p>Oficina especializada e peças originais para todas as marcas.</p>
+        <p>Atendimento de segunda a sábado, das 8h às 18h.</p>
+        <p class="whatsapp-footer"><i class="fab fa-whatsapp"></i> (62) 99461-3292</p>
+        <p id="atalhoAdmin" title="">&copy; 2025 JC Motos. Todos os direitos reservados.</p>
+    </footer>
+<button class="chat-launcher" id="chatLauncher" type="button" aria-expanded="false" aria-controls="quickChat" aria-label="Abrir opções de atendimento">💬</button>
+<aside class="quick-chat" id="quickChat" hidden aria-label="Opções de atendimento">
+  <div class="quick-chat__header"><div><strong>Olá! Como podemos ajudar?</strong><span>Escolha uma opção abaixo.</span></div><button class="quick-chat__close" id="chatClose" type="button" aria-label="Fechar">×</button></div>
+  <div class="quick-chat__body"><p>Você será encaminhado rapidamente:</p><div class="quick-chat__options">
+    <a class="quick-chat__option" href="https://wa.me/5562994613292?text=Ol%C3%A1%21%20Vim%20pelo%20site%20JC%20Motos%20e%20gostaria%20de%20atendimento." target="_blank" rel="noopener noreferrer">💬 Falar com atendimento</a>
+    <a class="quick-chat__option" href="catalogo.html">🛍️ Ver o catálogo</a>
+    <a class="quick-chat__option" href="https://wa.me/5562994613292?text=Ol%C3%A1%21%20Vim%20pelo%20site%20JC%20Motos%20e%20gostaria%20de%20falar%20com%20um%20mec%C3%A2nico." target="_blank" rel="noopener noreferrer">🔧 Falar com um mecânico</a>
+  </div></div>
+</aside>
+<script>
+  const escaparHtml = valor => String(valor ?? '').replace(/[&<>"']/g, caractere => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' })[caractere]);
+  const formatarPreco = valor => Number(valor).toLocaleString('pt-BR', { style: 'currency', currency: 'BRL' });
+  async function carregarVitrineInicial() {
+    const faixa = document.getElementById('faixaProdutos');
+    try {
+      const resposta = await fetch('/api/capacetes');
+      if (!resposta.ok) throw new Error('Falha ao carregar catálogo');
+      const produtos = await resposta.json();
+      if (!produtos.length) { faixa.innerHTML = '<p class="produtos-home__vazio">Novos produtos aparecerão aqui em breve.</p>'; return; }
+      const itens = produtos.length === 1 ? produtos : [...produtos, ...produtos];
+      faixa.innerHTML = itens.map(produto => `<a class="produto-home" href="catalogo.html#produto-${encodeURIComponent(produto.id)}"><img src="${escaparHtml(produto.url_imagem)}" alt="${escaparHtml(`${produto.marca} ${produto.modelo}`)}"><div><strong>${escaparHtml(`${produto.marca} ${produto.modelo}`)}</strong><span>${formatarPreco(produto.preco)}</span></div></a>`).join('');
+    } catch { faixa.innerHTML = '<p class="produtos-home__vazio">Não foi possível carregar os produtos agora.</p>'; }
+  }
+  carregarVitrineInicial();
+
+  let cliquesAtalhoAdmin = 0;
+  let temporizadorAtalhoAdmin;
+  document.getElementById('atalhoAdmin').addEventListener('click', () => {
+    cliquesAtalhoAdmin += 1;
+    clearTimeout(temporizadorAtalhoAdmin);
+    temporizadorAtalhoAdmin = setTimeout(() => { cliquesAtalhoAdmin = 0; }, 700);
+    if (cliquesAtalhoAdmin === 3) window.location.href = '/admin';
+  });
+
+  const chatLauncher = document.getElementById('chatLauncher');
+  const quickChat = document.getElementById('quickChat');
+  const setChatState = open => { quickChat.hidden = !open; chatLauncher.setAttribute('aria-expanded', String(open)); };
+  chatLauncher.addEventListener('click', () => setChatState(quickChat.hidden));
+  document.getElementById('chatClose').addEventListener('click', () => setChatState(false));
+</script>
+
+</body>
+</html>

@@ -1,0 +1,220 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Catálogo de Produtos - JC MOTOS</title>
+    <style>
+        * { box-sizing: border-box; }
+        body {
+            background-color: #09090b;
+            color: #f4f4f5;
+            font-family: Arial, sans-serif;
+            margin: 0;
+            padding: 0 20px 48px;
+        }
+        .site-header {
+            max-width: 1100px;
+            min-height: 110px;
+            margin: 0 auto 56px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            border-bottom: 3px solid #dc2626;
+        }
+        .logo {
+            width: 150px;
+            height: auto;
+            object-fit: contain;
+        }
+        .page-heading {
+            text-align: center;
+            margin-bottom: 48px;
+        }
+        h1 {
+            color: #f4f4f5;
+            margin: 0;
+            font-size: clamp(2rem, 5vw, 2.7rem);
+        }
+        .page-heading h1 span { color: #ef4444; }
+        .page-heading p { color: #a1a1aa; }
+        .btn-voltar {
+            display: inline-block;
+            color: #f4f4f5;
+            text-decoration: none;
+            font-weight: bold;
+        }
+        .btn-voltar:hover {
+            color: #ff1a1a;
+        }
+        /* Grade de produtos */
+        .catalogo-container {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+            gap: 24px;
+            max-width: 1100px;
+            margin: 0 auto;
+        }
+        .produto-card {
+            background-color: #18181b;
+            border: 1px solid #27272a;
+            border-radius: 14px;
+            overflow: hidden;
+            padding: 0;
+            text-align: left;
+            transition: transform 0.2s, border-color 0.2s;
+            display: flex;
+            flex-direction: column;
+            justify-content: space-between;
+        }
+        .produto-card:hover {
+            transform: translateY(-5px);
+            border-color: #dc2626;
+        }
+        .produto-img-container {
+            width: 100%;
+            height: 235px;
+            overflow: hidden;
+            position: relative;
+            background-color: #000;
+        }
+        .produto-img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+        }
+        .produto-tag {
+            position: absolute;
+            top: 12px;
+            left: 12px;
+            padding: 5px 9px;
+            color: #fff;
+            background: #dc2626;
+            border-radius: 999px;
+            font-size: .7rem;
+            font-weight: 800;
+            text-transform: uppercase;
+        }
+        .produto-conteudo { padding: 18px; }
+        .produto-info { color: #a1a1aa; font-size: .9rem; margin: 0; }
+        .produto-descricao { color: #d4d4d8; font-size: .9rem; line-height: 1.45; }
+        .produto-acao { padding: 0 18px 18px; }
+        .produto-card .btn-comprar {
+            margin: 0;
+        }
+        .produto-titulo {
+            font-size: 1.1rem;
+            margin: 10px 0 5px 0;
+            min-height: 44px;
+        }
+        .produto-preco {
+            color: #10b981;
+            font-size: 1.25rem;
+            font-weight: bold;
+            margin: 5px 0;
+        }
+        .btn-comprar {
+            display: block;
+            background-color: #10b981;
+            color: white;
+            text-decoration: none;
+            padding: 13px;
+            border-radius: 7px;
+            font-weight: bold;
+            text-align: center;
+        }
+        .btn-comprar:hover {
+            background-color: #059669;
+        }
+        .loading-msg {
+            text-align: center;
+            font-size: 1.2rem;
+            color: #888;
+            grid-column: 1 / -1;
+        }
+        @media (max-width: 600px) {
+            .site-header { min-height: auto; padding: 16px 0; margin-bottom: 40px; }
+            .logo { width: 110px; }
+            .btn-voltar { font-size: .9rem; }
+        }
+    </style>
+</head>
+<body>
+
+    <header class="site-header">
+        <a href="index.html" aria-label="Voltar para a página inicial">
+            <img src="logo.png" alt="JC Motos" class="logo">
+        </a>
+        <a href="index.html" class="btn-voltar">← Página Inicial</a>
+    </header>
+
+    <section class="page-heading">
+        <h1>Catálogo <span>Digital</span></h1>
+        <p>Capacetes disponíveis em destaque. Escolha o seu e fale conosco pelo WhatsApp.</p>
+    </section>
+
+    <main class="catalogo-container" id="vitrineProdutos">
+        <div class="loading-msg">Carregando capacetes...</div>
+    </main>
+
+    <script>
+        // Substitua pelo número real do WhatsApp da loja (com DDD e sem espaços)
+        const WHATSAPP_NUMERO = '5562994613292';
+
+        if (location.protocol === 'file:') location.replace('http://localhost:3000/catalogo.html');
+
+        async function carregarCatalogo() {
+            try {
+                const response = await fetch('/api/capacetes');
+                if (!response.ok) throw new Error('Não foi possível carregar o catálogo.');
+                const capacetes = await response.json();
+                
+                const container = document.getElementById('vitrineProdutos');
+                container.innerHTML = ''; // Limpa a mensagem de carregando
+
+                if (capacetes.length === 0) {
+                    container.innerHTML = '<div class="loading-msg">Nenhum capacete disponível no momento.</div>';
+                    return;
+                }
+
+                capacetes.forEach(produto => {
+                    // Formata o preço para o padrão de moeda brasileiro (R$ 150,00)
+                    const precoFormatado = Number(produto.preco).toLocaleString('pt-BR', {
+                        style: 'currency',
+                        currency: 'BRL'
+                    });
+
+                    // Mensagem personalizada para enviar no WhatsApp
+                    const textoZap = encodeURIComponent(`Olá! Tenho interesse no capacete ${produto.marca} ${produto.modelo} (Tamanho: ${produto.tamanho}) que vi no catálogo.`);
+
+                    // Cria a estrutura do card idêntica ao seu design
+                    container.innerHTML += `
+                        <article class="produto-card" id="produto-${encodeURIComponent(produto.id)}">
+                            <div class="produto-img-container">
+                                <img src="${produto.url_imagem}" alt="${produto.marca} ${produto.modelo}" class="produto-img">
+                                <span class="produto-tag">Capacetes</span>
+                            </div>
+                            <div class="produto-conteudo">
+                                <h2 class="produto-titulo">${produto.marca} ${produto.modelo}</h2>
+                                <p class="produto-info">Tamanho: ${produto.tamanho}</p>
+                                <p class="produto-preco">${precoFormatado}</p>
+                                <p class="produto-descricao">${produto.descricao || 'Capacete disponível. Clique no botão para consultar e reservar o seu.'}</p>
+                            </div>
+                            <div class="produto-acao">
+                                <a href="https://wa.me/${WHATSAPP_NUMERO}?text=${textoZap}" target="_blank" rel="noopener noreferrer" class="btn-comprar">Tenho interesse</a>
+                            </div>
+                        </article>
+                    `;
+                });
+            } catch (error) {
+                console.error("Erro ao carregar o catálogo:", error);
+                document.getElementById('vitrineProdutos').innerHTML = '<div class="loading-msg" style="color: #ff1a1a;">Erro ao carregar os produtos. Verifique se o servidor está ativo.</div>';
+            }
+        }
+
+        // Executa a busca assim que a página abre
+        carregarCatalogo();
+    </script>
+
+</body>
+</html>

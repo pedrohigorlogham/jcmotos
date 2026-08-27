@@ -1,0 +1,13 @@
+SITE JC MOTOS — COMO USAR
+
+1. Instale o Node.js versão LTS no computador.
+2. Extraia este arquivo ZIP em uma pasta, por exemplo C:\SITE JC.
+3. Clique duas vezes em iniciar-site.bat.
+4. Abra http://localhost:3000 no navegador.
+5. Para administrar os produtos, abra http://localhost:3000/admin.
+
+IMPORTANTE
+
+- O site funciona neste computador enquanto o iniciar-site.bat estiver aberto.
+- Um link na bio do Instagram só será público se o site estiver hospedado na internet ou se houver um túnel público configurado com o computador ligado 24 horas por dia.
+- Não há senhas de serviços externos nem chaves de IA neste pacote.
