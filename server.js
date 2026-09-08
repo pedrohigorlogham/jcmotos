@@ -11,7 +11,7 @@ app.use(express.urlencoded({ limit: '50mb', extended: true }));
 app.use(cors());
 app.use(express.static(process.cwd()));
 
-// Inicializa o cliente do Supabase
+// Inicializa o cliente do Supabase usando as variáveis seguras do Render
 const supabaseUrl = process.env.SUPABASE_URL;
 const supabaseAnonKey = process.env.SUPABASE_ANON_KEY;
 const supabase = createClient(supabaseUrl, supabaseAnonKey);
@@ -42,12 +42,12 @@ async function salvarImagemSupabase(base64) {
     return publicUrlData.publicUrl;
 }
 
-// Atalho /admin que abre o painel.html
+// Atalho /admin que redireciona para a página painel.html
 app.get('/admin', (req, res) => {
     res.sendFile(path.join(process.cwd(), 'painel.html'));
 });
 
-// Rota para buscar os produtos do catálogo
+// Rota para buscar os produtos do catálogo do Supabase
 app.get('/api/produtos', async (req, res) => {
     try {
         const { data, error } = await supabase
@@ -83,7 +83,7 @@ app.post('/api/produtos', async (req, res) => {
     }
 });
 
-// Rota de login por senha mestra
+// ÚNICA ROTA DE LOGIN COMPATÍVEL COM O SEU PAINEL (SENHA MESTRA)
 app.post('/api/login', (req, res) => {
     try {
         const { senha } = req.body;
@@ -92,6 +92,7 @@ app.post('/api/login', (req, res) => {
             return res.status(400).json({ error: 'Por favor, digite a senha.' });
         }
 
+        // Compara com a variável do Render
         if (senha !== process.env.ADMIN_PASSWORD) {
             return res.status(401).json({ error: 'Senha incorreta. Tente novamente.' });
         }
