@@ -27,7 +27,7 @@ async function salvarImagemSupabase(base64) {
     const nomeArquivo = `capacete-${crypto.randomUUID()}.${extensao}`;
 
     const { data, error } = await supabase.storage
-        .from('Imagens-catalogo')
+        .from('imagens-catalogo')
         .upload(nomeArquivo, buffer, {
             contentType: `image/${extensao}`,
             upsert: false
@@ -36,7 +36,7 @@ async function salvarImagemSupabase(base64) {
     if (error) throw error;
 
     const { data: publicUrlData } = supabase.storage
-        .from('Imagens-catalogo')
+        .from('imagens-catalogo')
         .getPublicUrl(nomeArquivo);
 
     return publicUrlData.publicUrl;
@@ -83,7 +83,7 @@ app.post('/api/produtos', async (req, res) => {
     }
 });
 
-// ÚNICA ROTA DE LOGIN COMPATÍVEL COM O SEU PAINEL (SENHA MESTRA)
+// Rota de login por senha mestra
 app.post('/api/login', (req, res) => {
     try {
         const { senha } = req.body;
@@ -92,7 +92,6 @@ app.post('/api/login', (req, res) => {
             return res.status(400).json({ error: 'Por favor, digite a senha.' });
         }
 
-        // Compara com a variável do Render
         if (senha !== process.env.ADMIN_PASSWORD) {
             return res.status(401).json({ error: 'Senha incorreta. Tente novamente.' });
         }
