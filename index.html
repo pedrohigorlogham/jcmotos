@@ -5,7 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>JC Motos - Oficina e Peças</title>
     <!-- Ícones do FontAwesome -->
-    <link rel="stylesheet" href="https://cloudflare.com">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
     
     <!-- DESIGN FIXO EM CSS NATIVO (Blindado contra bugs de carregamento) -->
     <style>
@@ -57,53 +57,49 @@
         .nav-menu a:hover {
             color: #ef4444 !important;
         }
-/* Animacão e Tamanho da Logo Desvinculada da Barra */
-@keyframes floatSlow {
-    0% { transform: translateY(0px); }
-    50% { transform: translateY(-6px); }
-    100% { transform: translateY(0px); }
-}
 
-.logo-flutuante {
-    animation: floatSlow 5s ease-in-out infinite;
-    position: absolute; /* TRUQUE DE IA: Desvincula a logo da barra preta */
-    top: -52%;           /* Centraliza verticalmente na barra */
-    transform: translateY(-50%); /* Ajuste fino da centralizacão */
-    left: 24px;         /* Distância do canto esquerdo do site */
-    z-index: 100;       /* Garante que ela fica por cima de tudo */
-    
-    /* VALOR DE CONTROLE MANUAL: Pode aumentar ou diminuir esse número à vontade agora */
-    height: 250px !important; 
-    width: auto !important;
-    display: block;
-    object-fit: contain;
-}
+        /* Animação e Tamanho da Logo */
+        @keyframes floatSlow {
+            0% { transform: translateY(0px); }
+            50% { transform: translateY(-6px); }
+            100% { transform: translateY(0px); }
+        }
 
-       /* Botão do WhatsApp Estilo Neon Verde */
-.btn-whatsapp {
-    background-color: #10b981 !important;
-    color: #ffffff !important;
-    font-weight: 800;
-    padding: 12px 26px;
-    border-radius: 50px;
-    text-decoration: none;
-    font-size: 16px;
-    display: inline-flex;
-    align-items: center;
-    gap: 8px;
-    /* Efeito Neon de Luz Expandida */
-    box-shadow: 0 0 15px #10b981, 0 0 30px rgba(16, 185, 129, 0.4);
-    text-shadow: 0 1px 2px rgba(0, 0, 0, 0.3);
-    transition: all 0.3s ease;
-}
+        .logo-flutuante {
+            animation: floatSlow 5s ease-in-out infinite;
+            position: absolute;
+            top: -52%;
+            transform: translateY(-50%);
+            left: 24px;
+            z-index: 100;
+            height: 250px !important; 
+            width: auto !important;
+            display: block;
+            object-fit: contain;
+        }
 
-.btn-whatsapp:hover {
-    background-color: #059669 !important;
-    transform: scale(1.05);
-    box-shadow: 0 0 25px #10b981, 0 0 40px rgba(16, 185, 129, 0.6);
-}
+        /* Botão do WhatsApp */
+        .btn-whatsapp {
+            background-color: #10b981 !important;
+            color: #ffffff !important;
+            font-weight: 800;
+            padding: 12px 26px;
+            border-radius: 50px;
+            text-decoration: none;
+            font-size: 16px;
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            box-shadow: 0 0 15px #10b981, 0 0 30px rgba(16, 185, 129, 0.4);
+            text-shadow: 0 1px 2px rgba(0, 0, 0, 0.3);
+            transition: all 0.3s ease;
+        }
 
-        
+        .btn-whatsapp:hover {
+            background-color: #059669 !important;
+            transform: scale(1.05);
+            box-shadow: 0 0 25px #10b981, 0 0 40px rgba(16, 185, 129, 0.6);
+        }
 
         /* Banner Principal (Hero) */
         .hero {
@@ -211,6 +207,8 @@
         .card a:hover {
             text-decoration: underline;
         }
+
+        /* Carrossel de Produtos */
         .produtos-home { padding: 0 0 80px; overflow: hidden; }
         .produtos-home__titulo { max-width: 1152px; margin: 0 auto 30px; padding: 0 16px; text-align: center; }
         .produtos-home__titulo h3 { font-size: 36px; font-weight: 900; margin-bottom: 8px; }
@@ -226,7 +224,7 @@
         .produto-home strong, .produto-home span { display: block; }
         .produto-home strong { white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
         .produto-home span { margin-top: 6px; color: #f87171; font-weight: 800; }
-        .produtos-home__vazio { color: #a1a1aa; text-align: center; }
+        .produtos-home__vazio { color: #a1a1aa; text-align: center; width: 100%; }
         @keyframes deslizarProdutos { to { transform: translateX(calc(-50% - 9px)); } }
         @media (prefers-reduced-motion: reduce) { .produtos-carrossel__faixa { animation: none; } }
         @media (max-width: 767px) {
@@ -302,20 +300,17 @@
     <!-- CABEÇALHO (NAVBAR) -->
     <header>
         <div class="nav-container">
-            <!-- LOGO INTEGRADA -->
             <a href="#inicio">
                 <img src="logo.png" alt="JC Motos Logo" class="logo-flutuante">
             </a>
             
-            <!-- MENU COM O LINK ATUALIZADO PARA CATALOGO.HTML -->
             <nav class="nav-menu">
                 <a href="#inicio">Início</a>
                 <a href="#servicos">Serviços</a>
-                <a href="catalogo.html">Produtos</a> <!-- Alterado para abrir o catálogo -->
+                <a href="catalogo.html">Produtos</a>
                 <a href="#contato">Contato</a>
             </nav>
             
-            <!-- BOTÃO WHATSAPP BALÃO VERDE -->
             <a href="https://wa.me/5562994613292?text=Ol%C3%A1%21%20Vim%20pelo%20site%20JC%20Motos%20e%20gostaria%20de%20atendimento." target="_blank" rel="noopener noreferrer" class="btn-whatsapp">
                 <i class="fab fa-whatsapp"></i> Fale Conosco
             </a>
@@ -337,7 +332,6 @@
         <h3>Nossos <span>Serviços e Peças</span></h3>
         
         <div class="grid-servicos">
-            <!-- Item 1 - Auxílio Mecânico -->
             <div class="card">
                 <div>
                     <div class="card-icon"><i class="fas fa-tools"></i></div>
@@ -347,28 +341,27 @@
                 <a href="vendedores.html">Falar com um Mecânico →</a>
             </div>
 
-               <!-- Item 2 - Falar com um Vendedor -->
-        <div class="card">
-            <div>
-                <div class="card-icon"><i class="fas fa-shopping-bag"></i></div>
-                <h4>Fale com um dos nossos vendedores</h4>
-                <p></p>
+            <div class="card">
+                <div>
+                    <div class="card-icon"><i class="fas fa-shopping-bag"></i></div>
+                    <h4>Fale com um dos nossos vendedores</h4>
+                    <p></p>
+                </div>
+                <a href="https://wa.me/5562994613292?text=Ol%C3%A1%21%20Vim%20pelo%20site%20JC%20Motos%20e%20gostaria%20de%20falar%20com%20um%20vendedor.">Falar com um Vendedor ➔</a>
             </div>
-            <a href="https://wa.me/5562994613292?text=Ol%C3%A1%21%20Vim%20pelo%20site%20JC%20Motos%20e%20gostaria%20de%20falar%20com%20um%20vendedor.">Falar com um Vendedor ➔</a>
-        </div>
 
-        <!-- Item 3 - Catálogo Digital com O LINK ATUALIZADO PARA CATALOGO.HTML -->
-        <div class="card">
-            <div>
-                <div class="card-icon"><i class="fas fa-book-open"></i></div>
-                <h4>Catálogo Digital</h4>
-                <p></p>
+            <div class="card">
+                <div>
+                    <div class="card-icon"><i class="fas fa-book-open"></i></div>
+                    <h4>Catálogo Digital</h4>
+                    <p></p>
+                </div>
+                <a href="catalogo.html">Acessar o Catálogo ➔</a>
             </div>
-            <a href="catalogo.html">Acessar o Catálogo ➔</a>
         </div>
-
     </section>
 
+    <!-- CARROSSEL DE PRODUTOS -->
     <section class="produtos-home" aria-labelledby="produtos-home-titulo">
         <div class="produtos-home__titulo">
             <h3 id="produtos-home-titulo">Nossos <span>Produtos</span></h3>
@@ -385,48 +378,79 @@
         <p>Oficina especializada e peças originais para todas as marcas.</p>
         <p>Atendimento de segunda a sábado, das 8h às 18h.</p>
         <p class="whatsapp-footer"><i class="fab fa-whatsapp"></i> (62) 99461-3292</p>
-        <p id="atalhoAdmin" title="">&copy; 2025 JC Motos. Todos os direitos reservados.</p>
+        <p id="atalhoAdmin" style="cursor: pointer;">&copy; 2025 JC Motos. Todos os direitos reservados.</p>
     </footer>
-<button class="chat-launcher" id="chatLauncher" type="button" aria-expanded="false" aria-controls="quickChat" aria-label="Abrir opções de atendimento">💬</button>
-<aside class="quick-chat" id="quickChat" hidden aria-label="Opções de atendimento">
-  <div class="quick-chat__header"><div><strong>Olá! Como podemos ajudar?</strong><span>Escolha uma opção abaixo.</span></div><button class="quick-chat__close" id="chatClose" type="button" aria-label="Fechar">×</button></div>
-  <div class="quick-chat__body"><p>Você será encaminhado rapidamente:</p><div class="quick-chat__options">
-    <a class="quick-chat__option" href="https://wa.me/5562994613292?text=Ol%C3%A1%21%20Vim%20pelo%20site%20JC%20Motos%20e%20gostaria%20de%20atendimento." target="_blank" rel="noopener noreferrer">💬 Falar com atendimento</a>
-    <a class="quick-chat__option" href="catalogo.html">🛍️ Ver o catálogo</a>
-    <a class="quick-chat__option" href="https://wa.me/5562994613292?text=Ol%C3%A1%21%20Vim%20pelo%20site%20JC%20Motos%20e%20gostaria%20de%20falar%20com%20um%20mec%C3%A2nico." target="_blank" rel="noopener noreferrer">🔧 Falar com um mecânico</a>
-  </div></div>
-</aside>
-<script>
-  const escaparHtml = valor => String(valor ?? '').replace(/[&<>"']/g, caractere => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' })[caractere]);
-  const formatarPreco = valor => Number(valor).toLocaleString('pt-BR', { style: 'currency', currency: 'BRL' });
-  async function carregarVitrineInicial() {
-    const faixa = document.getElementById('faixaProdutos');
-    try {
-      const resposta = await fetch('/api/capacetes');
-      if (!resposta.ok) throw new Error('Falha ao carregar catálogo');
-      const produtos = await resposta.json();
-      if (!produtos.length) { faixa.innerHTML = '<p class="produtos-home__vazio">Novos produtos aparecerão aqui em breve.</p>'; return; }
-      const itens = produtos.length === 1 ? produtos : [...produtos, ...produtos];
-      faixa.innerHTML = itens.map(produto => `<a class="produto-home" href="catalogo.html#produto-${encodeURIComponent(produto.id)}"><img src="${escaparHtml(produto.url_imagem)}" alt="${escaparHtml(`${produto.marca} ${produto.modelo}`)}"><div><strong>${escaparHtml(`${produto.marca} ${produto.modelo}`)}</strong><span>${formatarPreco(produto.preco)}</span></div></a>`).join('');
-    } catch { faixa.innerHTML = '<p class="produtos-home__vazio">Não foi possível carregar os produtos agora.</p>'; }
-  }
-  carregarVitrineInicial();
 
-  let cliquesAtalhoAdmin = 0;
-  let temporizadorAtalhoAdmin;
-  document.getElementById('atalhoAdmin').addEventListener('click', () => {
-    cliquesAtalhoAdmin += 1;
-    clearTimeout(temporizadorAtalhoAdmin);
-    temporizadorAtalhoAdmin = setTimeout(() => { cliquesAtalhoAdmin = 0; }, 700);
-    if (cliquesAtalhoAdmin === 3) window.location.href = '/admin';
-  });
+    <button class="chat-launcher" id="chatLauncher" type="button" aria-expanded="false" aria-controls="quickChat" aria-label="Abrir opções de atendimento">💬</button>
+    <aside class="quick-chat" id="quickChat" hidden aria-label="Opções de atendimento">
+        <div class="quick-chat__header">
+            <div><strong>Olá! Como podemos ajudar?</strong><span>Escolha uma opção abaixo.</span></div>
+            <button class="quick-chat__close" id="chatClose" type="button" aria-label="Fechar">×</button>
+        </div>
+        <div class="quick-chat__body">
+            <p>Você será encaminhado rapidamente:</p>
+            <div class="quick-chat__options">
+                <a class="quick-chat__option" href="https://wa.me/5562994613292?text=Ol%C3%A1%21%20Vim%20pelo%20site%20JC%20Motos%20e%20gostaria%20de%20atendimento." target="_blank" rel="noopener noreferrer">💬 Falar com atendimento</a>
+                <a class="quick-chat__option" href="catalogo.html">🛍️ Ver o catálogo</a>
+                <a class="quick-chat__option" href="https://wa.me/5562994613292?text=Ol%C3%A1%21%20Vim%20pelo%20site%20JC%20Motos%20e%20gostaria%20de%20falar%20com%20um%20mec%C3%A2nico." target="_blank" rel="noopener noreferrer">🔧 Falar com um mecânico</a>
+            </div>
+        </div>
+    </aside>
 
-  const chatLauncher = document.getElementById('chatLauncher');
-  const quickChat = document.getElementById('quickChat');
-  const setChatState = open => { quickChat.hidden = !open; chatLauncher.setAttribute('aria-expanded', String(open)); };
-  chatLauncher.addEventListener('click', () => setChatState(quickChat.hidden));
-  document.getElementById('chatClose').addEventListener('click', () => setChatState(false));
-</script>
+    <script>
+      const escaparHtml = valor => String(valor ?? '').replace(/[&<>"']/g, caractere => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' })[caractere]);
+      
+      async function carregarVitrineInicial() {
+        const faixa = document.getElementById('faixaProdutos');
+        try {
+          // Rota ajustada para /api/produtos
+          const resposta = await fetch('/api/produtos');
+          if (!resposta.ok) throw new Error('Falha ao carregar catálogo');
+          const produtos = await resposta.json();
+
+          if (!produtos || !produtos.length) { 
+            faixa.innerHTML = '<p class="produtos-home__vazio">Novos produtos aparecerão aqui em breve.</p>'; 
+            return; 
+          }
+
+          // Duplica a lista para o efeito infinito do carrossel deslizar sem falhas
+          const itens = produtos.length < 5 ? [...produtos, ...produtos, ...produtos] : [...produtos, ...produtos];
+
+          faixa.innerHTML = itens.map(produto => `
+            <a class="produto-home" href="catalogo.html">
+              <img src="${escaparHtml(produto.imagem_url)}" alt="${escaparHtml(produto.nome)}">
+              <div>
+                <strong>${escaparHtml(produto.nome)}</strong>
+                <span>R$ ${escaparHtml(produto.preco)}</span>
+              </div>
+            </a>
+          `).join('');
+
+        } catch (erro) { 
+          console.error(erro);
+          faixa.innerHTML = '<p class="produtos-home__vazio">Não foi possível carregar os produtos agora.</p>'; 
+        }
+      }
+
+      carregarVitrineInicial();
+
+      // Atalho para o painel admin (3 cliques no copyright)
+      let cliquesAtalhoAdmin = 0;
+      let temporizadorAtalhoAdmin;
+      document.getElementById('atalhoAdmin').addEventListener('click', () => {
+        cliquesAtalhoAdmin += 1;
+        clearTimeout(temporizadorAtalhoAdmin);
+        temporizadorAtalhoAdmin = setTimeout(() => { cliquesAtalhoAdmin = 0; }, 700);
+        if (cliquesAtalhoAdmin === 3) window.location.href = '/admin';
+      });
+
+      // Quick Chat Toggle
+      const chatLauncher = document.getElementById('chatLauncher');
+      const quickChat = document.getElementById('quickChat');
+      const setChatState = open => { quickChat.hidden = !open; chatLauncher.setAttribute('aria-expanded', String(open)); };
+      chatLauncher.addEventListener('click', () => setChatState(quickChat.hidden));
+      document.getElementById('chatClose').addEventListener('click', () => setChatState(false));
+    </script>
 
 </body>
 </html>
