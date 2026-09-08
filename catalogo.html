@@ -3,218 +3,254 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Catálogo de Produtos - JC MOTOS</title>
+    <title>Catálogo Digital - JC Motos</title>
+    <!-- Ícones do FontAwesome -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    
     <style>
-        * { box-sizing: border-box; }
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
         body {
             background-color: #09090b;
             color: #f4f4f5;
-            font-family: Arial, sans-serif;
-            margin: 0;
-            padding: 0 20px 48px;
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+            line-height: 1.6;
         }
-        .site-header {
-            max-width: 1100px;
-            min-height: 110px;
-            margin: 0 auto 56px;
+
+        /* Cabeçalho */
+        header {
+            background-color: #000000;
+            border-bottom: 4px solid #dc2626;
+            position: sticky;
+            top: 0;
+            z-index: 50;
+            width: 100%;
+        }
+        .nav-container {
+            max-width: 1320px;
+            margin: 0 auto;
+            padding: 20px 24px;
             display: flex;
             justify-content: space-between;
             align-items: center;
-            border-bottom: 3px solid #dc2626;
         }
-        .logo {
-            width: 150px;
-            height: auto;
-            object-fit: contain;
+        .logo-link {
+            display: flex;
+            align-items: center;
+            text-decoration: none;
         }
-        .page-heading {
-            text-align: center;
-            margin-bottom: 48px;
+        .logo-img {
+            height: 60px;
+            width: auto;
         }
-        h1 {
-            color: #f4f4f5;
-            margin: 0;
-            font-size: clamp(2rem, 5vw, 2.7rem);
+        .nav-menu {
+            display: flex;
+            gap: 36px;
         }
-        .page-heading h1 span { color: #ef4444; }
-        .page-heading p { color: #a1a1aa; }
-        .btn-voltar {
-            display: inline-block;
+        @media (max-width: 768px) {
+            .nav-menu { display: none; }
+        }
+        .nav-menu a {
             color: #f4f4f5;
             text-decoration: none;
-            font-weight: bold;
+            font-size: 18px;
+            font-weight: 700;
+            transition: color 0.2s;
         }
-        .btn-voltar:hover {
-            color: #ff1a1a;
+        .nav-menu a:hover {
+            color: #ef4444;
         }
-        /* Grade de produtos */
+
+        /* Hero do Catálogo */
+        .catalogo-hero {
+            background-color: #18181b;
+            padding: 60px 16px 40px;
+            text-align: center;
+            border-bottom: 1px solid #27272a;
+        }
+        .catalogo-hero h1 {
+            font-size: 36px;
+            font-weight: 900;
+            margin-bottom: 8px;
+        }
+        .catalogo-hero h1 span {
+            color: #dc2626;
+        }
+        .catalogo-hero p {
+            color: #a1a1aa;
+            font-size: 16px;
+        }
+
+        /* Grid do Catálogo */
         .catalogo-container {
+            max-width: 1200px;
+            margin: 40px auto;
+            padding: 0 16px;
+        }
+        .produtos-grid {
             display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+            grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
             gap: 24px;
-            max-width: 1100px;
-            margin: 0 auto;
         }
         .produto-card {
             background-color: #18181b;
             border: 1px solid #27272a;
-            border-radius: 14px;
+            border-radius: 12px;
             overflow: hidden;
-            padding: 0;
-            text-align: left;
-            transition: transform 0.2s, border-color 0.2s;
             display: flex;
             flex-direction: column;
             justify-content: space-between;
+            transition: transform 0.2s, border-color 0.2s;
         }
         .produto-card:hover {
             transform: translateY(-5px);
             border-color: #dc2626;
         }
-        .produto-img-container {
+        .produto-card img {
             width: 100%;
-            height: 235px;
-            overflow: hidden;
-            position: relative;
-            background-color: #000;
-        }
-        .produto-img {
-            width: 100%;
-            height: 100%;
+            height: 200px;
             object-fit: cover;
+            background-color: #27272a;
         }
-        .produto-tag {
-            position: absolute;
-            top: 12px;
-            left: 12px;
-            padding: 5px 9px;
-            color: #fff;
-            background: #dc2626;
-            border-radius: 999px;
-            font-size: .7rem;
-            font-weight: 800;
-            text-transform: uppercase;
+        .produto-info {
+            padding: 16px;
+            display: flex;
+            flex-direction: column;
+            flex-grow: 1;
+            justify-content: space-between;
         }
-        .produto-conteudo { padding: 18px; }
-        .produto-info { color: #a1a1aa; font-size: .9rem; margin: 0; }
-        .produto-descricao { color: #d4d4d8; font-size: .9rem; line-height: 1.45; }
-        .produto-acao { padding: 0 18px 18px; }
-        .produto-card .btn-comprar {
-            margin: 0;
-        }
-        .produto-titulo {
-            font-size: 1.1rem;
-            margin: 10px 0 5px 0;
-            min-height: 44px;
+        .produto-nome {
+            font-size: 18px;
+            font-weight: 700;
+            color: #ffffff;
+            margin-bottom: 8px;
         }
         .produto-preco {
-            color: #10b981;
-            font-size: 1.25rem;
-            font-weight: bold;
-            margin: 5px 0;
+            font-size: 20px;
+            font-weight: 800;
+            color: #ef4444;
+            margin-bottom: 16px;
         }
         .btn-comprar {
-            display: block;
             background-color: #10b981;
-            color: white;
+            color: #ffffff;
             text-decoration: none;
-            padding: 13px;
-            border-radius: 7px;
-            font-weight: bold;
             text-align: center;
+            padding: 10px;
+            border-radius: 8px;
+            font-weight: 700;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+            transition: background-color 0.2s;
         }
         .btn-comprar:hover {
             background-color: #059669;
         }
-        .loading-msg {
+        .mensagem-status {
             text-align: center;
-            font-size: 1.2rem;
-            color: #888;
             grid-column: 1 / -1;
+            padding: 40px 0;
+            color: #a1a1aa;
+            font-size: 18px;
         }
-        @media (max-width: 600px) {
-            .site-header { min-height: auto; padding: 16px 0; margin-bottom: 40px; }
-            .logo { width: 110px; }
-            .btn-voltar { font-size: .9rem; }
+
+        /* Rodapé */
+        footer {
+            background-color: #000000;
+            border-top: 1px solid #27272a;
+            padding: 40px 16px;
+            text-align: center;
+            color: #71717a;
+            font-size: 14px;
+            margin-top: 60px;
         }
     </style>
 </head>
 <body>
 
-    <header class="site-header">
-        <a href="index.html" aria-label="Voltar para a página inicial">
-            <img src="logo.png" alt="JC Motos" class="logo">
-        </a>
-        <a href="index.html" class="btn-voltar">← Página Inicial</a>
+    <!-- CABEÇALHO -->
+    <header>
+        <div class="nav-container">
+            <a href="index.html" class="logo-link">
+                <img src="logo.png" alt="JC Motos Logo" class="logo-img">
+            </a>
+            
+            <nav class="nav-menu">
+                <a href="index.html#inicio">Início</a>
+                <a href="index.html#servicos">Serviços</a>
+                <a href="catalogo.html" style="color: #ef4444;">Catálogo</a>
+                <a href="index.html#contato">Contato</a>
+            </nav>
+        </div>
     </header>
 
-    <section class="page-heading">
-        <h1>Catálogo <span>Digital</span></h1>
-        <p>Capacetes disponíveis em destaque. Escolha o seu e fale conosco pelo WhatsApp.</p>
+    <!-- BANNER DO CATÁLOGO -->
+    <section class="catalogo-hero">
+        <h1>Catálogo de <span>Produtos e Peças</span></h1>
+        <p>Confira nossos produtos disponíveis. Entre em contato diretamente pelo WhatsApp para garantir o seu!</p>
     </section>
 
-    <main class="catalogo-container" id="vitrineProdutos">
-        <div class="loading-msg">Carregando capacetes...</div>
+    <!-- CONTAINER DOS PRODUTOS -->
+    <main class="catalogo-container">
+        <div class="produtos-grid" id="gridProdutos">
+            <p class="mensagem-status">Carregando catálogo...</p>
+        </div>
     </main>
 
-    <script>
-        // Substitua pelo número real do WhatsApp da loja (com DDD e sem espaços)
-        const WHATSAPP_NUMERO = '5562994613292';
+    <!-- RODAPÉ -->
+    <footer>
+        <p>&copy; 2025 JC Motos. Todos os direitos reservados.</p>
+    </footer>
 
-        if (location.protocol === 'file:') location.replace('http://localhost:3000/catalogo.html');
+    <script>
+        const escaparHtml = texto => String(texto ?? '').replace(/[&<>"']/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' })[c]);
 
         async function carregarCatalogo() {
+            const grid = document.getElementById('gridProdutos');
             try {
-                const response = await fetch('/api/capacetes');
-                if (!response.ok) throw new Error('Não foi possível carregar o catálogo.');
-                const capacetes = await response.json();
+                // Rota atualizada para /api/produtos
+                const resposta = await fetch('/api/produtos');
+                if (!resposta.ok) throw new Error('Falha ao conectar com o servidor');
                 
-                const container = document.getElementById('vitrineProdutos');
-                container.innerHTML = ''; // Limpa a mensagem de carregando
+                const produtos = await resposta.json();
 
-                if (capacetes.length === 0) {
-                    container.innerHTML = '<div class="loading-msg">Nenhum capacete disponível no momento.</div>';
+                if (!produtos || produtos.length === 0) {
+                    grid.innerHTML = '<p class="mensagem-status">Nenhum produto cadastrado no momento.</p>';
                     return;
                 }
 
-                capacetes.forEach(produto => {
-                    // Formata o preço para o padrão de moeda brasileiro (R$ 150,00)
-                    const precoFormatado = Number(produto.preco).toLocaleString('pt-BR', {
-                        style: 'currency',
-                        currency: 'BRL'
-                    });
+                grid.innerHTML = produtos.map(p => {
+                    const textoWhatsapp = encodeURIComponent(`Olá! Vi o produto "${p.nome}" no catálogo do site por R$ ${p.preco} e gostaria de mais informações.`);
+                    const linkWhatsapp = `https://wa.me/5562994613292?text=${textoWhatsapp}`;
 
-                    // Mensagem personalizada para enviar no WhatsApp
-                    const textoZap = encodeURIComponent(`Olá! Tenho interesse no capacete ${produto.marca} ${produto.modelo} (Tamanho: ${produto.tamanho}) que vi no catálogo.`);
-
-                    // Cria a estrutura do card idêntica ao seu design
-                    container.innerHTML += `
-                        <article class="produto-card" id="produto-${encodeURIComponent(produto.id)}">
-                            <div class="produto-img-container">
-                                <img src="${produto.url_imagem}" alt="${produto.marca} ${produto.modelo}" class="produto-img">
-                                <span class="produto-tag">Capacetes</span>
+                    return `
+                        <div class="produto-card">
+                            <img src="${escaparHtml(p.imagem_url)}" alt="${escaparHtml(p.nome)}" onerror="this.src='https://via.placeholder.com/300x200?text=Sem+Imagem'">
+                            <div class="produto-info">
+                                <div>
+                                    <div class="produto-nome">${escaparHtml(p.nome)}</div>
+                                    <div class="produto-preco">R$ ${escaparHtml(p.preco)}</div>
+                                </div>
+                                <a href="${linkWhatsapp}" target="_blank" rel="noopener noreferrer" class="btn-comprar">
+                                    <i class="fab fa-whatsapp"></i> Tenho Interesse
+                                </a>
                             </div>
-                            <div class="produto-conteudo">
-                                <h2 class="produto-titulo">${produto.marca} ${produto.modelo}</h2>
-                                <p class="produto-info">Tamanho: ${produto.tamanho}</p>
-                                <p class="produto-preco">${precoFormatado}</p>
-                                <p class="produto-descricao">${produto.descricao || 'Capacete disponível. Clique no botão para consultar e reservar o seu.'}</p>
-                            </div>
-                            <div class="produto-acao">
-                                <a href="https://wa.me/${WHATSAPP_NUMERO}?text=${textoZap}" target="_blank" rel="noopener noreferrer" class="btn-comprar">Tenho interesse</a>
-                            </div>
-                        </article>
+                        </div>
                     `;
-                });
-            } catch (error) {
-                console.error("Erro ao carregar o catálogo:", error);
-                document.getElementById('vitrineProdutos').innerHTML = '<div class="loading-msg" style="color: #ff1a1a;">Erro ao carregar os produtos. Verifique se o servidor está ativo.</div>';
+                }).join('');
+
+            } catch (erro) {
+                console.error('Erro ao carregar produtos:', erro);
+                grid.innerHTML = '<p class="mensagem-status">Erro ao carregar os produtos. Verifique se o servidor está ativo.</p>';
             }
         }
 
-        // Executa a busca assim que a página abre
         carregarCatalogo();
     </script>
-
 </body>
 </html>
