@@ -108,30 +108,44 @@
         }
 
         // Função de Login conectada com a rota de senha mestre do server.js
-        async function tentarLogar(e) {
-            e.preventDefault();
-            const senhaDigitada = document.getElementById('senna').value;
+      async function tentarLogar(e) {
+    e.preventDefault();
+    
+    // Busca o campo por qualquer um dos IDs possíveis para evitar erros
+    const campoSenha = document.getElementById('senna') || document.getElementById('senha') || document.querySelector('input[type="password"]');
+    
+    if (!campoSenha) {
+        return alert('Erro no sistema: O campo de senha não foi encontrado na página.');
+    }
+    
+    // Pega o valor e remove espaços invisíveis
+    const senhaDigitada = campoSenha.value.trim();
 
-            try {
-                const resposta = await fetch(`${API}/login`, {
-                    method: 'POST',
-                    headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify({ senha: senhaDigitada })
-                });
+    if (!senhaDigitada) {
+        return alert('Por favor, digite a senha antes de entrar.');
+    }
 
-                const dados = await resposta.json();
+    try {
+        const resposta = await fetch(`${API}/login`, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ senha: senhaDigitada })
+        });
 
-                if (resposta.ok && dados.autorizado) {
-                    localStorage.setItem('admin_autenticado', 'true');
-                    abrirPainel();
-                } else {
-                    alert(dados.error || 'Senha incorreta. Tente novamente.');
-                }
-            } catch (error) {
-                console.error(error);
-                alert('Erro de comunicação com o servidor.');
-            }
+        const dados = await resposta.json();
+
+        if (resposta.ok && dados.autorizado) {
+            localStorage.setItem('admin_autenticado', 'true');
+            abrirPainel();
+        } else {
+            alert(dados.error || 'Senha incorreta. Tente novamente.');
         }
+    } catch (error) {
+        console.error(error);
+        alert('Erro de comunicação com o servidor.');
+    }
+}
+
 
         // Envia o novo capacete direto para o backend que salva no Supabase
         async function salvarProduto(e) {
