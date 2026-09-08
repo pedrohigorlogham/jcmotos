@@ -15,6 +15,7 @@ app.use(express.static(process.cwd()));
 const supabaseUrl = process.env.SUPABASE_URL;
 const supabaseAnonKey = process.env.SUPABASE_ANON_KEY;
 const supabase = createClient(supabaseUrl, supabaseAnonKey);
+
 // Função para salvar a imagem em Base64 no Storage do Supabase
 async function salvarImagemSupabase(base64) {
   const partes = String(base64).match(/^data:image\/(jpeg|png|jpg);base64,(.+)$/);
@@ -26,7 +27,7 @@ async function salvarImagemSupabase(base64) {
   const nomeArquivo = `capacete-${crypto.randomUUID()}.${extensao}`;
 
   const { data, error } = await supabase.storage
-    .from('imagens-catalago') // Correção: 'a' no final
+    .from('imagens-catalago')
     .upload(nomeArquivo, buffer, {
       contentType: `image/${extensao}`,
       upsert: false
@@ -35,7 +36,7 @@ async function salvarImagemSupabase(base64) {
   if (error) throw error;
 
   const { data: publicUrlData } = supabase.storage
-    .from('imagens-catalago') // Correção: 'a' no final
+    .from('imagens-catalago')
     .getPublicUrl(nomeArquivo);
 
   return publicUrlData.publicUrl;
@@ -51,7 +52,7 @@ app.get('/api/produtos', async (req, res) => {
   try {
     const { data, error } = await supabase
       .from('produtos')
-      .select('*'); // Removida a ordenação por created_at para evitar o erro 500
+      .select('*');
 
     if (error) throw error;
     res.json(data);
@@ -60,45 +61,61 @@ app.get('/api/produtos', async (req, res) => {
   }
 });
 
-
 // Rota para cadastrar um novo produto com foto
 app.post('/api/produtos', async (req, res) => {
-    try {
-        const { nome, preco, imagem } = req.body;
-        if (!nome || !preco || !imagem) {
-            return res.status(400).json({ error: 'Preencha todos os campos.' });
-        }
-
-        const fotoPublicUrl = await salvarImagemSupabase(imagem);
-
-        const { error } = await supabase
-            .from('produtos')
-            .insert([{ nome, preco, imagem_url: fotoPublicUrl }]);
-
-        if (error) throw error;
-        res.status(201).json({ message: 'Produto cadastrado com sucesso!' });
-    } catch (error) {
-        res.status(500).json({ error: error.message });
+  try {
+    const { nome, preco, imagem } = req.body;
+    if (!nome || !preco || !imagem) {
+      return res.status(400).json({ error: 'Preencha todos os campos.' });
     }
+
+    const fotoPublicUrl = await salvarImagemSupabase(imagem);
+
+    const { error } = await supabase
+      .from('produtos')
+      .insert([{ nome, preco, imagem_url: fotoPublicUrl }]);
+
+    if (error) throw error;
+    res.status(201).json({ message: 'Produto cadastrado com sucesso!' });
+  } catch (error) {
+    res.status(500).json({ error: error.message });
+  }
+});
+
+// Rota para deletar um produto pelo ID
+app.delete('/api/produtos/:id', async (req, res) => {
+  try {
+    const { id } = req.params;
+
+    const { error } = await supabase
+      .from('produtos')
+      .delete()
+      .eq('id', id);
+
+    if (error) throw error;
+    res.json({ message: 'Produto excluído com sucesso!' });
+  } catch (error) {
+    res.status(500).json({ error: 'Erro ao excluir o produto.' });
+  }
 });
 
 // Rota de login por senha mestra
 app.post('/api/login', (req, res) => {
-    try {
-        const { senha } = req.body;
+  try {
+    const { senha } = req.body;
 
-        if (!senha) {
-            return res.status(400).json({ error: 'Por favor, digite a senha.' });
-        }
-
-        if (senha !== process.env.ADMIN_PASSWORD) {
-            return res.status(401).json({ error: 'Senha incorreta. Tente novamente.' });
-        }
-
-        res.json({ message: 'Acesso liberado!', autorizado: true });
-    } catch (error) {
-        res.status(500).json({ error: 'Erro interno no servidor.' });
+    if (!senha) {
+      return res.status(400).json({ error: 'Por favor, digite a senha.' });
     }
+
+    if (senha !== process.env.ADMIN_PASSWORD) {
+      return res.status(401).json({ error: 'Senha incorreta. Tente novamente.' });
+    }
+
+    res.json({ message: 'Acesso liberado!', autorizado: true });
+  } catch (error) {
+    res.status(500).json({ error: 'Erro interno no servidor.' });
+  }
 });
 
 const PORT = process.env.PORT || 3000;
