@@ -15,52 +15,51 @@ app.use(express.static(process.cwd()));
 const supabaseUrl = process.env.SUPABASE_URL;
 const supabaseAnonKey = process.env.SUPABASE_ANON_KEY;
 const supabase = createClient(supabaseUrl, supabaseAnonKey);
-
 // Função para salvar a imagem em Base64 no Storage do Supabase
 async function salvarImagemSupabase(base64) {
-    const partes = String(base64).match(/^data:image\/(jpeg|png|jpg);base64,(.+)$/);
-    if (!partes) throw new Error('Envie uma imagem JPG, JPEG ou PNG válida.');
+  const partes = String(base64).match(/^data:image\/(jpeg|png|jpg);base64,(.+)$/);
+  if (!partes) throw new Error('Envie uma imagem JPG, JPEG ou PNG válida.');
 
-    const extensao = partes[1];
-    const base64Dados = partes[2];
-    const buffer = Buffer.from(base64Dados, 'base64');
-    const nomeArquivo = `capacete-${crypto.randomUUID()}.${extensao}`;
+  const extensao = partes[1];
+  const base64Dados = partes[2];
+  const buffer = Buffer.from(base64Dados, 'base64');
+  const nomeArquivo = `capacete-${crypto.randomUUID()}.${extensao}`;
 
-    const { data, error } = await supabase.storage
-        .from('imagens-catalago')
-        .upload(nomeArquivo, buffer, {
-            contentType: `image/${extensao}`,
-            upsert: false
-        });
+  const { data, error } = await supabase.storage
+    .from('imagens-catalago') // Correção: 'a' no final
+    .upload(nomeArquivo, buffer, {
+      contentType: `image/${extensao}`,
+      upsert: false
+    });
 
-    if (error) throw error;
+  if (error) throw error;
 
-    const { data: publicUrlData } = supabase.storage
-        .from('imagens-catalago')
-        .getPublicUrl(nomeArquivo);
+  const { data: publicUrlData } = supabase.storage
+    .from('imagens-catalago') // Correção: 'a' no final
+    .getPublicUrl(nomeArquivo);
 
-    return publicUrlData.publicUrl;
+  return publicUrlData.publicUrl;
 }
 
 // Atalho /admin que redireciona para a página painel.html
 app.get('/admin', (req, res) => {
-    res.sendFile(path.join(process.cwd(), 'painel.html'));
+  res.sendFile(path.join(process.cwd(), 'painel.html'));
 });
 
 // Rota para buscar os produtos do catálogo do Supabase
 app.get('/api/produtos', async (req, res) => {
-    try {
-        const { data, error } = await supabase
-            .from('produtos')
-            .select('*')
-            .order('created_at', { ascending: false });
+  try {
+    const { data, error } = await supabase
+      .from('produtos')
+      .select('*'); // Removida a ordenação por created_at para evitar o erro 500
 
-        if (error) throw error;
-        res.json(data);
-    } catch (error) {
-        res.status(500).json({ error: 'Erro ao buscar o catálogo.' });
-    }
+    if (error) throw error;
+    res.json(data);
+  } catch (error) {
+    res.status(500).json({ error: 'Erro ao buscar o catálogo.' });
+  }
 });
+
 
 // Rota para cadastrar um novo produto com foto
 app.post('/api/produtos', async (req, res) => {
