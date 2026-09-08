@@ -2,6 +2,7 @@
   "type": "module",
   "dependencies": {
     "cors": "^2.8.6",
-    "express": "^5.2.1"
+    "express": "^4.2.1",
+    "@supabase/supabase-js": "^2.45.4"
   }
 }
