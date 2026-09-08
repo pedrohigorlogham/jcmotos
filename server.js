@@ -115,3 +115,32 @@ function criarHashSenha(senha, salt = crypto.randomBytes(16).toString('hex')) {
 // Inicia o servidor na porta padrão do Render ou na 3000 local
 const PORT = process.env.PORT || 3000;
 app.listen(PORT, () => console.log(`Servidor rodando na porta ${PORT}`));
+// ... (resto do seu código do Supabase acima)
+
+// ==========================================
+// ROTA DE LOGIN (APENAS COM SENHA MESTRA)
+// ==========================================
+app.post('/api/login', (req, res) => {
+    try {
+        const { senha } = req.body;
+
+        if (!senha) {
+            return res.status(400).json({ error: 'Por favor, digite a senha.' });
+        }
+
+        if (senha !== process.env.ADMIN_PASSWORD) {
+            return res.status(401).json({ error: 'Senha incorreta. Tente novamente.' });
+        }
+
+        res.json({ message: 'Acesso liberado!', autorizado: true });
+
+    } catch (error) {
+        console.error('Erro no login:', error);
+        res.status(500).json({ error: 'Erro interno no servidor.' });
+    }
+});
+
+// ESTA DEVE SER SEMPRE A ÚLTIMA LINHA DO ARQUIVO:
+const PORT = process.env.PORT || 3000;
+app.listen(PORT, () => console.log(`Servidor rodando na porta ${PORT}`));
+
