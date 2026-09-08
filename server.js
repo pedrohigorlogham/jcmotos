@@ -27,7 +27,7 @@ async function salvarImagemSupabase(base64) {
     const nomeArquivo = `capacete-${crypto.randomUUID()}.${extensao}`;
 
     const { data, error } = await supabase.storage
-        .from('imagens-catalogo')
+        .from('Imagens-catalogo')
         .upload(nomeArquivo, buffer, {
             contentType: `image/${extensao}`,
             upsert: false
@@ -36,7 +36,7 @@ async function salvarImagemSupabase(base64) {
     if (error) throw error;
 
     const { data: publicUrlData } = supabase.storage
-        .from('imagens-catalogo')
+        .from('Imagens-catalogo')
         .getPublicUrl(nomeArquivo);
 
     return publicUrlData.publicUrl;
