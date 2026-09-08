@@ -1,41 +1,61 @@
-<!DOCTYPE HTML>
+<!DOCTYPE html>
 <html lang="pt-BR">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Painel Administrativo - JC Motos</title>
     <style>
-        *{box-sizing:border-box}body{margin:0;background:#09090b;color:#f4f4f5;font-family:Arial,sans-serif}.topo{min-height:100px;display:flex;align-items:center;justify-content:space-between;padding:0 20px;background:#18181b;border-bottom:1px solid #27272a}.topo a{color:#f4f4f5;text-decoration:none;margin-left:20px}.container{max-width:1200px;margin:40px auto;padding:0 20px}.card{background:#18181b;border:1px solid #27272a;border-radius:8px;padding:30px;margin-bottom:30px}.oculto{display:none!important}input,button,select{width:100%;padding:12px;margin:10px 0;background:#27272a;border:1px solid #3f3f46;color:#f4f4f5;border-radius:6px}button{background:#dc2626;cursor:pointer;font-weight:700;border:none}button:hover{background:#b91c1c}table{width:100%;border-collapse:collapse;margin-top:20px}th,td{padding:12px;text-align:left;border-bottom:1px solid #27272a}th{background:#27272a}img{max-width:80px;border-radius:4px}
+        * { box-sizing: border-box; }
+        body { margin: 0; background: #0c0b0b; color: #f4f4f5; font-family: Arial, sans-serif; }
+        .topo { min-height: 100px; display: flex; align-items: center; justify-content: space-between; padding: 0 20px; background: #101010; border-bottom: 1px solid #27272a; }
+        .topo a { color: #f4f4f5; text-decoration: none; margin-left: 20px; }
+        .container { max-width: 900px; margin: 40px auto; padding: 0 20px; }
+        .card { background: #141414; padding: 24px; border-radius: 8px; border: 1px solid #27272a; margin-bottom: 24px; }
+        h1, h2 { margin-top: 0; }
+        form { display: flex; flex-direction: column; gap: 16px; margin-bottom: 30px; }
+        label { font-weight: bold; font-size: 14px; }
+        input[type="text"], input[type="file"] { width: 100%; padding: 10px; background: #27272a; border: 1px solid #3f3f46; color: #fff; border-radius: 4px; }
+        button[type="submit"] { background: #800d0d; color: #fff; border: none; padding: 12px; font-weight: bold; cursor: pointer; border-radius: 4px; }
+        button[type="submit"]:hover { background: #a11212; }
+        table { width: 100%; border-collapse: collapse; margin-top: 16px; }
+        th, td { text-align: left; padding: 12px; border-bottom: 1px solid #27272a; vertical-align: middle; }
+        th { background: #1f1f23; }
+        img.thumb { width: 50px; height: 50px; object-fit: cover; border-radius: 4px; }
+        .btn-delete { background: #dc2626; color: white; border: none; padding: 6px 12px; border-radius: 4px; cursor: pointer; font-weight: bold; }
+        .btn-delete:hover { background: #ef4444; }
     </style>
 </head>
 <body>
 
     <header class="topo">
-        <a href="index.html"><img src="logo.png" alt="JC Motos"></a>
-        <div>
-            <a href="catalogo.html">Ver catálogo ➔</a>
-        </div>
+        <a href="/"><img src="logo.png" alt="JC Motos" height="40"></a>
+        <a href="/catalogo.html">Ver catálogo ➔</a>
     </header>
 
     <main class="container">
-        <!-- ÁREA DE CADASTRO DE PRODUTOS (Abre direto sem pedir senha) -->
         <section id="areaAdmin" class="card">
             <h1>Produtos do catálogo</h1>
             <p>Cadastre capacetes manualmente. Assim que salvar, o produto aparecerá automaticamente no site do cliente.</p>
-            
+
             <h2>Adicionar capacete</h2>
             <form id="formProduto">
                 <input type="hidden" id="idProduto">
-                
-                <label for="nomeProduto">Marca / Modelo do Capacete:</label>
-                <input type="text" id="nomeProduto" placeholder="Ex: Capacete Pro Tork Evolution" required>
-                
-                <label for="precoProduto">Preço (R$):</label>
-                <input type="text" id="precoProduto" placeholder="Ex: 250,00" required>
-                
-                <label for="imagemProduto">Foto do Capacete:</label>
-                <input type="file" id="imagemProduto" accept="image/*" required>
-                
+
+                <div>
+                    <label for="nomeProduto">Marca / Modelo do Capacete:</label>
+                    <input type="text" id="nomeProduto" placeholder="Ex: Capacete Pro Tork Evolution" required>
+                </div>
+
+                <div>
+                    <label for="precoProduto">Preço (R$):</label>
+                    <input type="text" id="precoProduto" placeholder="Ex: 250,00" required>
+                </div>
+
+                <div>
+                    <label for="imagemProduto">Foto do Capacete:</label>
+                    <input type="file" id="imagemProduto" accept="image/*" required>
+                </div>
+
                 <button type="submit">Salvar Item no Catálogo</button>
             </form>
 
@@ -47,10 +67,11 @@
                             <th>Imagem</th>
                             <th>Marca / Modelo</th>
                             <th>Preço</th>
+                            <th style="text-align: center;">Ações</th>
                         </tr>
                     </thead>
                     <tbody id="corpoTabela">
-                        <tr><td colspan="3" style="text-align:center;">Carregando produtos...</td></tr>
+                        <tr><td colspan="4" style="text-align:center;">Carregando produtos...</td></tr>
                     </tbody>
                 </table>
             </div>
@@ -60,8 +81,7 @@
     <script>
         const API = window.location.hostname === 'localhost' ? 'http://localhost:3000/api' : '/api';
 
-        document.addEventListener("DOMContentLoaded", function() {
-            // Liga o evento de salvar ao formulário correto
+        document.addEventListener('DOMContentLoaded', function() {
             const formProduto = document.getElementById('formProduto');
             if (formProduto) {
                 formProduto.addEventListener('submit', salvarProduto);
@@ -69,20 +89,47 @@
             carregarProdutos();
         });
 
-        // Envia o novo capacete direto para o backend que salva no Supabase
+        // Buscar e exibir produtos cadastrados
+        async function carregarProdutos() {
+            const corpoTabela = document.getElementById('corpoTabela');
+            try {
+                const resposta = await fetch(`${API}/produtos`);
+                const produtos = await resposta.json();
+
+                if (!Array.isArray(produtos) || produtos.length === 0) {
+                    corpoTabela.innerHTML = '<tr><td colspan="4" style="text-align:center;">Nenhum produto cadastrado.</td></tr>';
+                    return;
+                }
+
+                corpoTabela.innerHTML = produtos.map(p => `
+                    <tr>
+                        <td><img src="${p.imagem_url}" class="thumb" alt="${p.nome}"></td>
+                        <td>${p.nome}</td>
+                        <td>R$ ${p.preco}</td>
+                        <td style="text-align: center;">
+                            <button class="btn-delete" onclick="excluirProduto('${p.id}')">Excluir</button>
+                        </td>
+                    </tr>
+                `).join('');
+            } catch (erro) {
+                console.error(erro);
+                corpoTabela.innerHTML = '<tr><td colspan="4" style="text-align:center; color:red;">Erro ao carregar itens do banco de dados.</td></tr>';
+            }
+        }
+
+        // Enviar novo produto para o backend
         async function salvarProduto(e) {
             e.preventDefault();
-            
+
             const nome = document.getElementById('nomeProduto').value;
             const preco = document.getElementById('precoProduto').value;
             const imagemInput = document.getElementById('imagemProduto');
-            
-            if (!imagemInput || imagemInput.files.length === 0) {
+
+            if (!imagemInput.files || imagemInput.files.length === 0) {
                 return alert('Por favor, selecione uma foto para o capacete.');
             }
 
             try {
-                // Transforma a foto em texto Base64 para enviar de forma segura
                 const imagemBase64 = await converterParaBase64(imagemInput.files[0]);
 
                 const resposta = await fetch(`${API}/produtos`, {
@@ -94,7 +141,7 @@
                 const resultado = await resposta.json();
 
                 if (resposta.ok) {
-                    alert('Capacete cadastrado e salvo com sucesso no Supabase!');
+                    alert('Capacete cadastrado com sucesso!');
                     document.getElementById('formProduto').reset();
                     carregarProdutos();
                 } else {
@@ -106,6 +153,29 @@
             }
         }
 
+        // Função para excluir produto
+        async function excluirProduto(id) {
+            if (!confirm('Tem certeza que deseja excluir este produto do catálogo?')) return;
+
+            try {
+                const resposta = await fetch(`${API}/produtos/${id}`, {
+                    method: 'DELETE'
+                });
+
+                if (resposta.ok) {
+                    alert('Produto excluído com sucesso!');
+                    carregarProdutos();
+                } else {
+                    const resultado = await resposta.json();
+                    alert(resultado.error || 'Erro ao excluir o produto.');
+                }
+            } catch (erro) {
+                console.error(erro);
+                alert('Erro de comunicação ao tentar excluir.');
+            }
+        }
+
+        // Converter arquivo de imagem em Base64
         function converterParaBase64(file) {
             return new Promise((resolve, reject) => {
                 const reader = new FileReader();
@@ -113,33 +183,6 @@
                 reader.onload = () => resolve(reader.result);
                 reader.onerror = error => reject(error);
             });
-        }
-
-        // Busca os produtos gravados na tabela do Supabase e mostra na lista abaixo do formulário
-        async function carregarProdutos() {
-            const corpoTabela = document.getElementById('corpoTabela');
-            if (!corpoTabela) return;
-
-            try {
-                const resposta = await fetch(`${API}/produtos`);
-                const produtos = await resposta.json();
-                
-                if (!produtos || produtos.length === 0) {
-                    corpoTabela.innerHTML = `<tr><td colspan="3" style="text-align:center;">Nenhum capacete cadastrado no banco de dados ainda.</td></tr>`;
-                    return;
-                }
-
-                corpoTabela.innerHTML = produtos.map(prod => `
-                    <tr>
-                        <td><img src="${prod.imagem_url || 'logo.png'}" alt="Foto do produto"></td>
-                        <td><strong>${prod.nome}</strong></td>
-                        <td>R$ ${prod.preco}</td>
-                    </tr>
-                `).join('');
-            } catch (erro) {
-                console.error('Erro ao listar produtos:', erro);
-                corpoTabela.innerHTML = `<tr><td colspan="3" style="text-align:center; color:#ef4444;">Erro ao carregar itens do banco de dados.</td></tr>`;
-            }
         }
     </script>
 </body>
