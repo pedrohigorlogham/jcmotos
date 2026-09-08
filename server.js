@@ -57,6 +57,7 @@ app.get('/api/produtos', async (req, res) => {
     if (error) throw error;
     res.json(data);
   } catch (error) {
+    console.error('Erro ao buscar produtos:', error);
     res.status(500).json({ error: 'Erro ao buscar o catálogo.' });
   }
 });
@@ -78,6 +79,7 @@ app.post('/api/produtos', async (req, res) => {
     if (error) throw error;
     res.status(201).json({ message: 'Produto cadastrado com sucesso!' });
   } catch (error) {
+    console.error('Erro ao cadastrar produto:', error);
     res.status(500).json({ error: error.message });
   }
 });
@@ -87,15 +89,21 @@ app.delete('/api/produtos/:id', async (req, res) => {
   try {
     const { id } = req.params;
 
-    const { error } = await supabase
+    const { data, error } = await supabase
       .from('produtos')
       .delete()
-      .eq('id', id);
+      .eq('id', id)
+      .select();
 
-    if (error) throw error;
-    res.json({ message: 'Produto excluído com sucesso!' });
+    if (error) {
+      console.error('Erro retornado do Supabase na deleção:', error);
+      return res.status(400).json({ error: error.message || 'Erro ao excluir o produto.' });
+    }
+
+    res.json({ message: 'Produto excluído com sucesso!', data });
   } catch (error) {
-    res.status(500).json({ error: 'Erro ao excluir o produto.' });
+    console.error('Erro no servidor ao tentar deletar:', error);
+    res.status(500).json({ error: 'Erro de comunicação no servidor ao excluir.' });
   }
 });
 
