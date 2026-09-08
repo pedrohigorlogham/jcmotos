@@ -1,30 +1,22 @@
 import express from 'express';
 import cors from 'cors';
 import crypto from 'node:crypto';
-import { createClient } from '@supabase/supabase-js';
 import path from 'node:path';
+import { createClient } from '@supabase/supabase-js';
 
-
-// Inicializa o Express
 const app = express();
 
-// IMPORTANTE: Se o seu painel envia fotos grandes em Base64, precisamos aumentar o limite do Express
 app.use(express.json({ limit: '50mb' }));
 app.use(express.urlencoded({ limit: '50mb', extended: true }));
-app.get('/admin', (req, res) => {
-    res.sendFile(path.join(process.cwd(), 'painel.html'));
-});
-
 app.use(cors());
 app.use(express.static(process.cwd()));
 
-
-// Inicializa o cliente do Supabase usando as variáveis seguras do Render
+// Inicializa o cliente do Supabase
 const supabaseUrl = process.env.SUPABASE_URL;
 const supabaseAnonKey = process.env.SUPABASE_ANON_KEY;
 const supabase = createClient(supabaseUrl, supabaseAnonKey);
 
-// Função para salvar a imagem em Base64 direto no Supabase Storage
+// Função para salvar a imagem em Base64 no Storage do Supabase
 async function salvarImagemSupabase(base64) {
     const partes = String(base64).match(/^data:image\/(jpeg|png|jpg);base64,(.+)$/);
     if (!partes) throw new Error('Envie uma imagem JPG, JPEG ou PNG válida.');
@@ -32,11 +24,8 @@ async function salvarImagemSupabase(base64) {
     const extensao = partes[1];
     const base64Dados = partes[2];
     const buffer = Buffer.from(base64Dados, 'base64');
-
-    // Gera um nome único para a foto não ser sobrescrita
     const nomeArquivo = `capacete-${crypto.randomUUID()}.${extensao}`;
 
-    // Faz o upload para o bucket 'imagens-catalogo' que criamos
     const { data, error } = await supabase.storage
         .from('imagens-catalogo')
         .upload(nomeArquivo, buffer, {
@@ -46,7 +35,6 @@ async function salvarImagemSupabase(base64) {
 
     if (error) throw error;
 
-    // Pega a URL pública permanente da foto
     const { data: publicUrlData } = supabase.storage
         .from('imagens-catalogo')
         .getPublicUrl(nomeArquivo);
@@ -54,11 +42,12 @@ async function salvarImagemSupabase(base64) {
     return publicUrlData.publicUrl;
 }
 
-// ==========================================
-// ROTAS DO CATÁLOGO (DEFINITIVAS NO BANCO)
-// ==========================================
+// Atalho /admin que abre o painel.html
+app.get('/admin', (req, res) => {
+    res.sendFile(path.join(process.cwd(), 'painel.html'));
+});
 
-// 1. Rota para BUSCAR os produtos do catálogo
+// Rota para buscar os produtos do catálogo
 app.get('/api/produtos', async (req, res) => {
     try {
         const { data, error } = await supabase
@@ -67,59 +56,34 @@ app.get('/api/produtos', async (req, res) => {
             .order('created_at', { ascending: false });
 
         if (error) throw error;
-
-        // Retorna a lista de produtos diretamente do banco de dados
         res.json(data);
     } catch (error) {
-        console.error('Erro ao buscar produtos:', error);
         res.status(500).json({ error: 'Erro ao buscar o catálogo.' });
     }
 });
 
-// 2. Rota para ADICIONAR um novo produto no catálogo
+// Rota para cadastrar um novo produto com foto
 app.post('/api/produtos', async (req, res) => {
     try {
-        const { nome, preco, imagem } = req.body; // 'imagem' deve ser o texto em Base64 vindo do seu formulário
-
+        const { nome, preco, imagem } = req.body;
         if (!nome || !preco || !imagem) {
-            return res.status(400).json({ error: 'Preencha todos os campos e envie a imagem.' });
+            return res.status(400).json({ error: 'Preencha todos os campos.' });
         }
 
-        // Envia a foto para o Storage do Supabase e pega o link permanente
         const fotoPublicUrl = await salvarImagemSupabase(imagem);
 
-        // Salva as informações do produto e o link da foto na tabela 'produtos'
-        const { data, error } = await supabase
+        const { error } = await supabase
             .from('produtos')
             .insert([{ nome, preco, imagem_url: fotoPublicUrl }]);
 
         if (error) throw error;
-
-        res.status(201).json({ message: 'Produto cadastrado com sucesso e salvo permanentemente!' });
+        res.status(201).json({ message: 'Produto cadastrado com sucesso!' });
     } catch (error) {
-        console.error('Erro ao salvar produto:', error);
-        res.status(500).json({ error: error.message || 'Erro ao cadastrar produto.' });
+        res.status(500).json({ error: error.message });
     }
 });
 
-// Mantive as outras funções do seu servidor caso precise usar para logins futuros
-function criarHashSenha(senha, salt = crypto.randomBytes(16).toString('hex')) {
-    return new Promise((resolve, reject) => {
-        crypto.scrypt(senha, salt, 64, (erro, chave) => {
-            if (erro) reject(erro);
-            else resolve({ salt, hash: chave.toString('hex') });
-        });
-    });
-}
-
-// Inicia o servidor na porta padrão do Render ou na 3000 local
-const PORT = process.env.PORT || 3000;
-app.listen(PORT, () => console.log(`Servidor rodando na porta ${PORT}`));
-// ... (resto do seu código do Supabase acima)
-
-// ==========================================
-// ROTA DE LOGIN (APENAS COM SENHA MESTRA)
-// ==========================================
+// Rota de login por senha mestra
 app.post('/api/login', (req, res) => {
     try {
         const { senha } = req.body;
@@ -133,14 +97,10 @@ app.post('/api/login', (req, res) => {
         }
 
         res.json({ message: 'Acesso liberado!', autorizado: true });
-
     } catch (error) {
-        console.error('Erro no login:', error);
         res.status(500).json({ error: 'Erro interno no servidor.' });
     }
 });
 
-// ESTA DEVE SER SEMPRE A ÚLTIMA LINHA DO ARQUIVO:
 const PORT = process.env.PORT || 3000;
 app.listen(PORT, () => console.log(`Servidor rodando na porta ${PORT}`));
-
