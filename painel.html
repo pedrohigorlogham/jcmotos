@@ -14,26 +14,14 @@
         <a href="index.html" aria-label="Página inicial"><img src="logo.png" alt="JC Motos"></a>
         <div>
             <a href="catalogo.html">Ver catálogo ➔</a>
-            <button id="botaoSair" class="oculto" style="width:auto; display:inline-block; margin-left:20px; padding:8px 15px;">Sair</button>
         </div>
     </header>
 
     <main class="container">
-        <!-- ÁREA 1: FORMULÁRIO DE LOGIN (Fica visível por padrão se não logado) -->
-        <section id="areaLogin" class="card">
-            <h1 id="tituloLogin">Acesso administrativo</h1>
-            <p id="textoLogin">Digite a senha secreta do dono do site para gerenciar o catálogo.</p>
-            <form id="formLogin">
-                <label for="senna">Senha de Acesso:</label>
-                <input type="password" id="senna" placeholder="Digite a senha do painel..." required>
-                <button type="submit">Entrar no Painel</button>
-            </form>
-        </section>
-
-        <!-- ÁREA 2: FORMULÁRIO DE CADASTRO DE PRODUTOS (Começa escondido) -->
-        <section id="areaAdmin" class="card oculto">
+        <!-- FORMULÁRIO DE CADASTRO DE PRODUTOS DIRETO E SEM SENHA -->
+        <section id="areaAdmin" class="card">
             <h1 id="tituloCatalogo">Produtos do catálogo</h1>
-            <p class="intro">Cadastre capacetes manualmente. Assim que salvar, o produto aparecerá automaticamente no site do cliente.</p>
+            <p class="intro">Cadastre capacetes manualmente. Assim que salvar, o produto aparecerá automaticamente no site.</p>
             
             <h2 id="tituloFormulario">Adicionar capacete</h2>
             <form id="formProduto">
@@ -63,7 +51,7 @@
                         </tr>
                     </thead>
                     <tbody id="corpoTabela">
-                        <!-- Os produtos salvos aparecerão aqui dentro via JavaScript -->
+                        <!-- Os produtos salvos aparecerão aqui via JavaScript -->
                     </tbody>
                 </table>
             </div>
@@ -71,83 +59,13 @@
     </main>
 
     <script>
-        // Detecta automaticamente se o site está rodando em localhost ou no Render
         const API = window.location.hostname === 'localhost' ? 'http://localhost:3000/api' : '/api';
 
-        // Inicializa as verificações da página
         document.addEventListener("DOMContentLoaded", function() {
-            verificarSessao();
-
-            // Configura os envios dos formulários
-            document.getElementById('formLogin').addEventListener('submit', tentarLogar);
-            document.getElementById('formProduto').addEventListener('submit', salvarProduto);
-            document.getElementById('botaoSair').addEventListener('click', efetuarLogout);
-        });
-
-        function verificarSessao() {
-            const autenticado = localStorage.getItem('admin_autenticado') === 'true';
-            if (autenticado) {
-                abrirPainel();
-            } else {
-                document.getElementById('areaLogin').classList.remove('oculto');
-                document.getElementById('areaAdmin').classList.add('oculto');
-                document.getElementById('botaoSair').classList.add('oculto');
-            }
-        }
-
-        function abrirPainel() {
-            document.getElementById('areaLogin').classList.add('oculto');
-            document.getElementById('areaAdmin').classList.remove('oculto');
-            document.getElementById('botaoSair').classList.remove('oculto');
             carregarProdutos();
-        }
-
-        function efetuarLogout() {
-            localStorage.removeItem('admin_autenticado');
-            window.location.reload();
-        }
-
-        // Função de Login conectada com a rota de senha mestre do server.js
-      async function tentarLogar(e) {
-    e.preventDefault();
-    
-    // Busca o campo por qualquer um dos IDs possíveis para evitar erros
-    const campoSenha = document.getElementById('senna') || document.getElementById('senha') || document.querySelector('input[type="password"]');
-    
-    if (!campoSenha) {
-        return alert('Erro no sistema: O campo de senha não foi encontrado na página.');
-    }
-    
-    // Pega o valor e remove espaços invisíveis
-    const senhaDigitada = campoSenha.value.trim();
-
-    if (!senhaDigitada) {
-        return alert('Por favor, digite a senha antes de entrar.');
-    }
-
-    try {
-        const resposta = await fetch(`${API}/login`, {
-            method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({ senha: senhaDigitada })
+            document.getElementById('formProduto').addEventListener('submit', salvarProduto);
         });
 
-        const dados = await resposta.json();
-
-        if (resposta.ok && dados.autorizado) {
-            localStorage.setItem('admin_autenticado', 'true');
-            abrirPainel();
-        } else {
-            alert(dados.error || 'Senha incorreta. Tente novamente.');
-        }
-    } catch (error) {
-        console.error(error);
-        alert('Erro de comunicação com o servidor.');
-    }
-}
-
-
-        // Envia o novo capacete direto para o backend que salva no Supabase
         async function salvarProduto(e) {
             e.preventDefault();
             const id = document.getElementById('idProduto').value;
@@ -157,7 +75,7 @@
             
             let imagemBase64 = "";
             if (imagemInput && imagemInput.files.length > 0) {
-                const file = imagemInput.files[0];
+                const file = imagemInput.files;
                 imagemBase64 = await converterParaBase64(file);
             }
 
@@ -193,7 +111,6 @@
             });
         }
 
-        // Puxa em tempo real a lista de capacetes gravados na tabela do Supabase
         async function carregarProdutos() {
             const corpoTabela = document.getElementById('corpoTabela');
             try {
@@ -223,3 +140,157 @@
 
         function limparFormulario() {
             document.getElementById('formProduto').reset();
+            document.getElementById('idProduto').value = '';
+            document.getElementById('tituloFormulario').textContent = 'Adicionar capacete';
+        }
+    </script>
+</body>
+</html>
+<!DOCTYPE HTML>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Painel Administrativo - JC Motos</title>
+    <style>
+        *{box-sizing:border-box}body{margin:0;background:#09090b;color:#f4f4f5;font-family:Arial,sans-serif}.topo{min-height:100px;display:flex;align-items:center;justify-content:space-between;padding:0 20px;background:#18181b;border-bottom:1px solid #27272a}.topo a{color:#f4f4f5;text-decoration:none;margin-left:20px}.container{max-width:1200px;margin:40px auto;padding:0 20px}.card{background:#18181b;border:1px solid #27272a;border-radius:8px;padding:30px;margin-bottom:30px}.oculto{display:none!important}input,button,select{width:100%;padding:12px;margin:10px 0;background:#27272a;border:1px solid #3f3f46;color:#f4f4f5;border-radius:6px}button{background:#dc2626;cursor:pointer;font-weight:700;border:none}button:hover{background:#b91c1c}table{width:100%;border-collapse:collapse;margin-top:20px}th,td{padding:12px;text-align:left;border-bottom:1px solid #27272a}th{background:#27272a}img{max-width:80px;border-radius:4px}
+    </style>
+</head>
+<body>
+
+    <header class="topo">
+        <a href="index.html" aria-label="Página inicial"><img src="logo.png" alt="JC Motos"></a>
+        <div>
+            <a href="catalogo.html">Ver catálogo ➔</a>
+        </div>
+    </header>
+
+    <main class="container">
+        <!-- FORMULÁRIO DE CADASTRO DE PRODUTOS DIRETO E SEM SENHA -->
+        <section id="areaAdmin" class="card">
+            <h1 id="tituloCatalogo">Produtos do catálogo</h1>
+            <p class="intro">Cadastre capacetes manualmente. Assim que salvar, o produto aparecerá automaticamente no site.</p>
+            
+            <h2 id="tituloFormulario">Adicionar capacete</h2>
+            <form id="formProduto">
+                <input type="hidden" id="idProduto">
+                
+                <label for="nomeProduto">Marca / Modelo do Capacete:</label>
+                <input type="text" id="nomeProduto" placeholder="Ex: Capacete Pro Tork Evolution" required>
+                
+                <label for="precoProduto">Preço (R$):</label>
+                <input type="text" id="precoProduto" placeholder="Ex: 250,00" required>
+                
+                <label for="imagemProduto">Foto do Capacete:</label>
+                <input type="file" id="imagemProduto" accept="image/*">
+                
+                <button type="submit">Salvar Item no Catálogo</button>
+            </form>
+
+            <h2>Produtos cadastrados</h2>
+            <div class="tabela-wrap">
+                <table>
+                    <thead>
+                        <tr>
+                            <th>Imagem</th>
+                            <th>Marca / Modelo</th>
+                            <th>Preço</th>
+                            <th>Ações</th>
+                        </tr>
+                    </thead>
+                    <tbody id="corpoTabela">
+                        <!-- Os produtos salvos aparecerão aqui via JavaScript -->
+                    </tbody>
+                </table>
+            </div>
+        </section>
+    </main>
+
+    <script>
+        const API = window.location.hostname === 'localhost' ? 'http://localhost:3000/api' : '/api';
+
+        document.addEventListener("DOMContentLoaded", function() {
+            carregarProdutos();
+            document.getElementById('formProduto').addEventListener('submit', salvarProduto);
+        });
+
+        async function salvarProduto(e) {
+            e.preventDefault();
+            const id = document.getElementById('idProduto').value;
+            const nome = document.getElementById('nomeProduto').value;
+            const preco = document.getElementById('precoProduto').value;
+            const imagemInput = document.getElementById('imagemProduto');
+            
+            let imagemBase64 = "";
+            if (imagemInput && imagemInput.files.length > 0) {
+                const file = imagemInput.files;
+                imagemBase64 = await converterParaBase64(file);
+            }
+
+            try {
+                const urlRota = id ? `${API}/produtos/${id}` : `${API}/produtos`;
+                const metodo = id ? 'PUT' : 'POST';
+
+                const resposta = await fetch(urlRota, {
+                    method: metodo,
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ nome, preco, imagem: imagemBase64 })
+                });
+
+                if (resposta.ok) {
+                    alert('Catálogo atualizado com sucesso!');
+                    limparFormulario();
+                    carregarProdutos();
+                } else {
+                    const erro = await resposta.json();
+                    alert(erro.error || 'Erro ao salvar o item.');
+                }
+            } catch (erro) {
+                alert('Erro de comunicação ao salvar.');
+            }
+        }
+
+        function converterParaBase64(file) {
+            return new Promise((resolve, reject) => {
+                const reader = new FileReader();
+                reader.readAsDataURL(file);
+                reader.onload = () => resolve(reader.result);
+                reader.onerror = error => reject(error);
+            });
+        }
+
+        async function carregarProdutos() {
+            const corpoTabela = document.getElementById('corpoTabela');
+            try {
+                const resposta = await fetch(`${API}/produtos`);
+                const produtos = await resposta.json();
+                
+                if (!produtos || produtos.length === 0) {
+                    corpoTabela.innerHTML = `<tr><td colspan="4" style="text-align:center;">Nenhum capacete cadastrado no banco.</td></tr>`;
+                    return;
+                }
+
+                corpoTabela.innerHTML = produtos.map(prod => `
+                    <tr>
+                        <td><img src="${prod.imagem_url || 'logo.png'}" alt="Foto do produto"></td>
+                        <td><strong>${prod.nome}</strong></td>
+                        <td>R$ ${prod.preco}</td>
+                        <td>
+                            <button onclick="removerItem(${prod.id})" style="background:#ef4444; width:auto; padding:5px 10px; margin:0;">Excluir</button>
+                        </td>
+                    </tr>
+                `).join('');
+            } catch (erro) {
+                console.error('Erro ao listar produtos:', erro);
+                corpoTabela.innerHTML = `<tr><td colspan="4" style="text-align:center; color:#ef4444;">Erro ao carregar itens do banco de dados.</td></tr>`;
+            }
+        }
+
+        function limparFormulario() {
+            document.getElementById('formProduto').reset();
+            document.getElementById('idProduto').value = '';
+            document.getElementById('tituloFormulario').textContent = 'Adicionar capacete';
+        }
+    </script>
+</body>
+</html>
