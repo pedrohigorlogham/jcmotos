@@ -1,130 +1,211 @@
-<!DOCTYPE html>
+<!DOCTYPE HTML>
 <html lang="pt-BR">
 <head>
-<meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1.0"><title>Painel Administrativo — JC Motos</title>
-<style>
-*{box-sizing:border-box}body{margin:0;background:#09090b;color:#f4f4f5;font-family:Arial,sans-serif}.topo{min-height:100px;display:flex;align-items:center;justify-content:space-between;padding:12px max(24px,calc((100% - 1100px)/2));border-bottom:3px solid #dc2626;background:#000}.topo img{width:130px;height:auto}.topo a,.sair{color:#f4f4f5;text-decoration:none;font-weight:bold;background:none;border:0;cursor:pointer;font-size:1rem}.topo a:hover,.sair:hover{color:#ef4444}.container{max-width:1100px;margin:0 auto;padding:42px 24px}h1,h2{margin:0 0 14px}h1 span,h2{color:#ef4444}.intro{color:#a1a1aa;margin:0 0 30px}.card{background:#18181b;border:1px solid #27272a;padding:24px;border-radius:14px;margin-bottom:28px}.oculto{display:none!important}.grade{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:16px}.campo-grande{grid-column:1/-1}label{display:flex;flex-direction:column;gap:8px;font-size:.95rem;font-weight:bold}input,textarea{width:100%;padding:12px;color:#f4f4f5;background:#09090b;border:1px solid #3f3f46;border-radius:7px;font:inherit}input:focus,textarea:focus{outline:2px solid #dc2626;border-color:transparent}textarea{min-height:100px;resize:vertical}.arquivo{padding:16px;border:1px dashed #ef4444;border-radius:7px;background:#121214;cursor:pointer}button{padding:13px 18px;border:0;border-radius:7px;background:#10b981;color:#fff;font:inherit;font-weight:bold;cursor:pointer}button:hover{background:#059669}button:disabled{cursor:wait;opacity:.6}.acoes{display:flex;justify-content:flex-end;gap:12px;margin-top:20px}.msg{min-height:24px;margin:16px 0 0;font-weight:bold}.erro{color:#f87171}.sucesso{color:#34d399}.tabela-wrap{overflow-x:auto}table{width:100%;border-collapse:collapse;min-width:750px}th,td{padding:12px;text-align:left;border-bottom:1px solid #27272a;vertical-align:middle}th{color:#f87171}td img{display:block;width:70px;height:56px;object-fit:cover;border-radius:6px}.btn-editar{background:#27272a;margin-right:6px}.btn-editar:hover{background:#3f3f46}.btn-excluir{background:#b91c1c}.btn-excluir:hover{background:#991b1b}.nota{color:#a1a1aa;font-size:.9rem;line-height:1.5}@media(max-width:650px){.grade{grid-template-columns:1fr}.campo-grande{grid-column:auto}.topo{padding:12px 20px}.topo img{width:105px}}
-</style>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Painel Administrativo - JC Motos</title>
+    <style>
+        *{box-sizing:border-box}body{margin:0;background:#09090b;color:#f4f4f5;font-family:Arial,sans-serif}.topo{min-height:100px;display:flex;align-items:center;justify-content:space-between;padding:0 20px;background:#18181b;border-bottom:1px solid #27272a}.topo a{color:#f4f4f5;text-decoration:none;margin-left:20px}.container{max-width:1200px;margin:40px auto;padding:0 20px}.card{background:#18181b;border:1px solid #27272a;border-radius:8px;padding:30px;margin-bottom:30px}.oculto{display:none!important}input,button,select{width:100%;padding:12px;margin:10px 0;background:#27272a;border:1px solid #3f3f46;color:#f4f4f5;border-radius:6px}button{background:#dc2626;cursor:pointer;font-weight:700;border:none}button:hover{background:#b91c1c}table{width:100%;border-collapse:collapse;margin-top:20px}th,td{padding:12px;text-align:left;border-bottom:1px solid #27272a}th{background:#27272a}img{max-width:80px;border-radius:4px}
+    </style>
 </head>
 <body>
-<header class="topo"><a href="index.html" aria-label="Página inicial"><img src="logo.png" alt="JC Motos"></a><a href="catalogo.html">Ver catálogo →</a><button id="botaoSair" class="sair oculto" type="button">Sair</button></header>
-<main class="container">
-<section id="areaLogin" class="card oculto"><h1 id="tituloLogin">Acesso <span>administrativo</span></h1><p id="textoLogin" class="intro"></p><form id="formLogin"><label>Senha do administrador<input id="senha" type="password" minlength="4" autocomplete="current-password" required></label><div class="acoes"><button id="botaoLogin" type="submit">Entrar</button></div></form><p id="mensagemLogin" class="msg" aria-live="polite"></p></section>
-<section id="areaAdmin" class="oculto"><h1>Produtos do <span>catálogo</span></h1><p class="intro">Cadastre capacetes manualmente. Assim que salvar, o produto aparecerá automaticamente no catálogo digital.</p>
-<section class="card"><h2 id="tituloFormulario">Adicionar capacete</h2><form id="formProduto"><input id="produtoId" type="hidden"><div class="grade"><label>Marca<input id="marca" required placeholder="Ex.: ASX"></label><label>Modelo<input id="modelo" required placeholder="Ex.: Draken Spirit"></label><label>Tamanho<input id="tamanho" required placeholder="Ex.: 58"></label><label>Preço (R$)<input id="preco" type="number" min="0.01" step="0.01" required placeholder="Ex.: 550.00"></label><label class="campo-grande">Descrição<textarea id="descricao" placeholder="Descreva o capacete, o estado, os recursos e qualquer detalhe importante."></textarea></label><label class="campo-grande">Imagem do capacete (JPG ou JPEG)<input id="imagem" class="arquivo" type="file" accept="image/jpeg,.jpg,.jpeg"></label></div><p class="nota">Na edição, deixe a imagem vazia para manter a foto atual.</p><div class="acoes"><button id="cancelarEdicao" class="btn-editar oculto" type="button">Cancelar edição</button><button id="salvarProduto" type="submit">Adicionar produto</button></div></form><p id="mensagemProduto" class="msg" aria-live="polite"></p></section>
-<section class="card"><h2>Produtos cadastrados</h2><div class="tabela-wrap"><table><thead><tr><th>Imagem</th><th>Marca / modelo</th><th>Tamanho</th><th>Preço</th><th>Descrição</th><th>Ações</th></tr></thead><tbody id="tabelaProdutos"></tbody></table></div></section></section>
-</main>
-<script>
-// Ajusta a URL automaticamente de acordo com o ambiente (local ou Render)
-const API = window.location.hostname === 'localhost' ? 'http://localhost:3000/api' : '/api';
 
-// Verifica se o usuário já fez login antes para pular a tela de acesso
-verificarSessao();
+    <header class="topo">
+        <a href="index.html" aria-label="Página inicial"><img src="logo.png" alt="JC Motos"></a>
+        <div>
+            <a href="catalogo.html">Ver catálogo ➔</a>
+            <button id="botaoSair" class="oculto" style="width:auto; display:inline-block; margin-left:20px; padding:8px 15px;">Sair</button>
+        </div>
+    </header>
 
-function verificarSessao() {
-    const autenticado = localStorage.getItem('admin_autenticado') === 'true';
-    if (autenticado) {
-        abrirPainel();
-    }
-}
+    <main class="container">
+        <!-- ÁREA 1: FORMULÁRIO DE LOGIN (Fica visível por padrão se não logado) -->
+        <section id="areaLogin" class="card">
+            <h1 id="tituloLogin">Acesso administrativo</h1>
+            <p id="textoLogin">Digite a senha secreta do dono do site para gerenciar o catálogo.</p>
+            <form id="formLogin">
+                <label for="senna">Senha de Acesso:</label>
+                <input type="password" id="senna" placeholder="Digite a senha do painel..." required>
+                <button type="submit">Entrar no Painel</button>
+            </form>
+        </section>
 
-function abrirPainel() {
-    document.getElementById('areaLogin').classList.add('oculto');
-    document.getElementById('areaAdmin').classList.remove('oculto');
-    carregarProdutos();
-}
+        <!-- ÁREA 2: FORMULÁRIO DE CADASTRO DE PRODUTOS (Começa escondido) -->
+        <section id="areaAdmin" class="card oculto">
+            <h1 id="tituloCatalogo">Produtos do catálogo</h1>
+            <p class="intro">Cadastre capacetes manualmente. Assim que salvar, o produto aparecerá automaticamente no site do cliente.</p>
+            
+            <h2 id="tituloFormulario">Adicionar capacete</h2>
+            <form id="formProduto">
+                <input type="hidden" id="idProduto">
+                
+                <label for="nomeProduto">Marca / Modelo do Capacete:</label>
+                <input type="text" id="nomeProduto" placeholder="Ex: Capacete Pro Tork Evolution" required>
+                
+                <label for="precoProduto">Preço (R$):</label>
+                <input type="text" id="precoProduto" placeholder="Ex: 250,00" required>
+                
+                <label for="imagemProduto">Foto do Capacete:</label>
+                <input type="file" id="imagemProduto" accept="image/*">
+                
+                <button type="submit">Salvar Item no Catálogo</button>
+            </form>
 
-// Função de Login simplificada por Senha Mestra
-$('#formLogin').on('submit', async function(e) {
-    e.preventDefault();
-    
-    // Pega o valor digitado no seu campo de senha atual
-    const senhaDigitada = $('#senna').val(); 
+            <h2>Produtos cadastrados</h2>
+            <div class="tabela-wrap">
+                <table>
+                    <thead>
+                        <tr>
+                            <th>Imagem</th>
+                            <th>Marca / Modelo</th>
+                            <th>Preço</th>
+                            <th>Ações</th>
+                        </tr>
+                    </thead>
+                    <tbody id="corpoTabela">
+                        <!-- Os produtos salvos aparecerão aqui dentro via JavaScript -->
+                    </tbody>
+                </table>
+            </div>
+        </section>
+    </main>
 
-    try {
-        const resposta = await fetch(`${API}/login`, {
-            method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({ senha: senhaDigitada })
+    <script>
+        // Detecta automaticamente se o site está rodando em localhost ou no Render
+        const API = window.location.hostname === 'localhost' ? 'http://localhost:3000/api' : '/api';
+
+        // Inicializa as verificações da página
+        document.addEventListener("DOMContentLoaded", function() {
+            verificarSessao();
+
+            // Configura os envios dos formulários
+            document.getElementById('formLogin').addEventListener('submit', tentarLogar);
+            document.getElementById('formProduto').addEventListener('submit', salvarProduto);
+            document.getElementById('botaoSair').addEventListener('click', efetuarLogout);
         });
 
-        const dados = await resposta.json();
-
-        if (resposta.ok && dados.autorizado) {
-            localStorage.setItem('admin_autenticado', 'true');
-            abrirPainel();
-        } else {
-            alert(dados.error || 'Senha incorreta. Tente novamente.');
+        function verificarSessao() {
+            const autenticado = localStorage.getItem('admin_autenticado') === 'true';
+            if (autenticado) {
+                abrirPainel();
+            } else {
+                document.getElementById('areaLogin').classList.remove('oculto');
+                document.getElementById('areaAdmin').classList.add('oculto');
+                document.getElementById('botaoSair').classList.add('oculto');
+            }
         }
-    } catch (error) {
-        console.error(error);
-        alert('Erro ao tentar conectar com o servidor.');
-    }
-});
 
-// Mantém a sua lógica original de envio do formulário de capacetes para o Supabase
-$('#formProduto').on('submit', async function(e) {
-    e.preventDefault();
-    const id = $('#idProduto').val();
-    const nome = $('#nomeProduto').val(); // Ajuste os IDs se forem diferentes no seu formulário
-    const preco = $('#precoProduto').val();
-    const imagemInput = document.getElementById('imagemProduto'); // Campo de arquivo
-    
-    let imagemBase64 = "";
-    if (imagemInput && imagemInput.files.length > 0) {
-        const file = imagemInput.files[0];
-        imagemBase64 = await converterParaBase64(file);
-    }
-
-    try {
-        const urlRota = id ? `${API}/produtos/${id}` : `${API}/produtos`;
-        const metodo = id ? 'PUT' : 'POST';
-
-        const resposta = await fetch(urlRota, {
-            method: metodo,
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({ nome, preco, imagem: imagemBase64 })
-        });
-
-        if (resposta.ok) {
-            alert('Catálogo atualizado com sucesso!');
-            limparFormulario();
+        function abrirPainel() {
+            document.getElementById('areaLogin').classList.add('oculto');
+            document.getElementById('areaAdmin').classList.remove('oculto');
+            document.getElementById('botaoSair').classList.remove('oculto');
             carregarProdutos();
-        } else {
-            const erro = await resposta.json();
-            alert(erro.error || 'Erro ao salvar o item.');
         }
-    } catch (erro) {
-        alert('Erro de comunicação com o servidor.');
-    }
-});
 
-function converterParaBase64(file) {
-    return new Promise((resolve, reject) => {
-        const reader = new FileReader();
-        reader.readAsDataURL(file);
-        reader.onload = () => resolve(reader.result);
-        reader.onerror = error => reject(error);
-    });
-}
+        function efetuarLogout() {
+            localStorage.removeItem('admin_autenticado');
+            window.location.reload();
+        }
 
-async function carregarProdutos() {
-    try {
-        const resposta = await fetch(`${API}/produtos`);
-        const produtos = await resposta.json();
-        
-        // Aqui você pode manter a sua lógica original que monta as linhas da tabela
-        // ex: $('#corpoTabela').html(produtos.map(...))
-    } catch (erro) {
-        console.error('Erro ao listar produtos:', erro);
-    }
-}
+        // Função de Login conectada com a rota de senha mestre do server.js
+        async function tentarLogar(e) {
+            e.preventDefault();
+            const senhaDigitada = document.getElementById('senna').value;
 
-function limparFormulario() {
-    $('#formProduto')[0].reset();
-    $('#idProduto').val('');
-    $('#tituloFormulario').text('Adicionar capacete');
-}
-</script>
+            try {
+                const resposta = await fetch(`${API}/login`, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ senha: senhaDigitada })
+                });
 
-</body></html>
+                const dados = await resposta.json();
+
+                if (resposta.ok && dados.autorizado) {
+                    localStorage.setItem('admin_autenticado', 'true');
+                    abrirPainel();
+                } else {
+                    alert(dados.error || 'Senha incorreta. Tente novamente.');
+                }
+            } catch (error) {
+                console.error(error);
+                alert('Erro de comunicação com o servidor.');
+            }
+        }
+
+        // Envia o novo capacete direto para o backend que salva no Supabase
+        async function salvarProduto(e) {
+            e.preventDefault();
+            const id = document.getElementById('idProduto').value;
+            const nome = document.getElementById('nomeProduto').value;
+            const preco = document.getElementById('precoProduto').value;
+            const imagemInput = document.getElementById('imagemProduto');
+            
+            let imagemBase64 = "";
+            if (imagemInput && imagemInput.files.length > 0) {
+                const file = imagemInput.files[0];
+                imagemBase64 = await converterParaBase64(file);
+            }
+
+            try {
+                const urlRota = id ? `${API}/produtos/${id}` : `${API}/produtos`;
+                const metodo = id ? 'PUT' : 'POST';
+
+                const resposta = await fetch(urlRota, {
+                    method: metodo,
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ nome, preco, imagem: imagemBase64 })
+                });
+
+                if (resposta.ok) {
+                    alert('Catálogo atualizado com sucesso!');
+                    limparFormulario();
+                    carregarProdutos();
+                } else {
+                    const erro = await resposta.json();
+                    alert(erro.error || 'Erro ao salvar o item.');
+                }
+            } catch (erro) {
+                alert('Erro de comunicação ao salvar.');
+            }
+        }
+
+        function converterParaBase64(file) {
+            return new Promise((resolve, reject) => {
+                const reader = new FileReader();
+                reader.readAsDataURL(file);
+                reader.onload = () => resolve(reader.result);
+                reader.onerror = error => reject(error);
+            });
+        }
+
+        // Puxa em tempo real a lista de capacetes gravados na tabela do Supabase
+        async function carregarProdutos() {
+            const corpoTabela = document.getElementById('corpoTabela');
+            try {
+                const resposta = await fetch(`${API}/produtos`);
+                const produtos = await resposta.json();
+                
+                if (!produtos || produtos.length === 0) {
+                    corpoTabela.innerHTML = `<tr><td colspan="4" style="text-align:center;">Nenhum capacete cadastrado no banco.</td></tr>`;
+                    return;
+                }
+
+                corpoTabela.innerHTML = produtos.map(prod => `
+                    <tr>
+                        <td><img src="${prod.imagem_url || 'logo.png'}" alt="Foto do produto"></td>
+                        <td><strong>${prod.nome}</strong></td>
+                        <td>R$ ${prod.preco}</td>
+                        <td>
+                            <button onclick="removerItem(${prod.id})" style="background:#ef4444; width:auto; padding:5px 10px; margin:0;">Excluir</button>
+                        </td>
+                    </tr>
+                `).join('');
+            } catch (erro) {
+                console.error('Erro ao listar produtos:', erro);
+                corpoTabela.innerHTML = `<tr><td colspan="4" style="text-align:center; color:#ef4444;">Erro ao carregar itens do banco de dados.</td></tr>`;
+            }
+        }
+
+        function limparFormulario() {
+            document.getElementById('formProduto').reset();
