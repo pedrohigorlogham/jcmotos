@@ -125,15 +125,18 @@ app.get('/api/configuracoes', async (req, res) => {
       .from('configuracoes')
       .select('*');
 
-    if (error) throw error;
+    if (error) {
+      console.error('Erro Supabase configuracoes:', error);
+      return res.json([]);
+    }
     res.json(data || []);
   } catch (error) {
     console.error('Erro ao buscar configurações:', error);
-    res.status(500).json({ error: 'Erro ao buscar configurações.' });
+    res.json([]);
   }
 });
 
-// Rota para atualizar a velocidade do carrossel no painel admin
+// Rota para atualizar a velocidade do carrossel no painel admin (usando Upsert)
 app.post('/api/configuracoes/carrossel', async (req, res) => {
   try {
     const { velocidade } = req.body;
@@ -141,26 +144,22 @@ app.post('/api/configuracoes/carrossel', async (req, res) => {
       return res.status(400).json({ error: 'Informe a velocidade.' });
     }
 
-    const { data: updateData, error: updateError } = await supabase
+    const { error } = await supabase
       .from('configuracoes')
-      .update({ valor: String(velocidade) })
-      .eq('chave', 'velocidade_carrossel')
-      .select();
+      .upsert(
+        { chave: 'velocidade_carrossel', valor: String(velocidade) },
+        { onConflict: 'chave' }
+      );
 
-    if (!updateData || updateData.length === 0) {
-      const { error: insertError } = await supabase
-        .from('configuracoes')
-        .insert([{ chave: 'velocidade_carrossel', valor: String(velocidade) }]);
-
-      if (insertError) throw insertError;
-    } else if (updateError) {
-      throw updateError;
+    if (error) {
+      console.error('Erro ao salvar no Supabase:', error);
+      throw error;
     }
 
     res.json({ message: 'Velocidade do carrossel atualizada com sucesso!' });
   } catch (error) {
     console.error('Erro ao salvar velocidade:', error);
-    res.status(500).json({ error: 'Erro ao salvar configuração.' });
+    res.status(500).json({ error: error.message || 'Erro ao salvar configuração.' });
   }
 });
 
