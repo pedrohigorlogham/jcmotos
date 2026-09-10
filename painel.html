@@ -26,7 +26,6 @@
         .btn-delete { background: #dc2626; color: white; border: none; padding: 6px 12px; border-radius: 4px; cursor: pointer; font-weight: bold; }
         .btn-delete:hover { background: #ef4444; }
         
-        /* Estilos adicionados para a opção de lançamento e velocidade */
         .check-lancamento { display: flex; align-items: center; gap: 10px; background: #1f1f23; padding: 12px; border-radius: 6px; border: 1px solid #00ff88; cursor: pointer; }
         .check-lancamento input { width: 20px; height: 20px; cursor: pointer; }
         .badge-table { background: #00ff88; color: #000; font-weight: bold; padding: 2px 6px; border-radius: 4px; font-size: 11px; }
@@ -63,7 +62,6 @@
                     <input type="file" id="imagemProduto" accept="image/*" required>
                 </div>
 
-                <!-- 1. Opção para marcar o produto como lançamento -->
                 <div class="check-lancamento">
                     <input type="checkbox" id="lancamentoProduto">
                     <label for="lancamentoProduto" style="color: #00ff88; cursor: pointer;">
@@ -74,7 +72,6 @@
                 <button type="submit">Salvar Item no Catálogo</button>
             </form>
 
-            <!-- 2. Bloco para configurar a velocidade do carrossel -->
             <div style="background: #1c1c21; padding: 20px; border-radius: 8px; border: 1px solid #27272a; margin-bottom: 30px;">
                 <h2 style="margin-bottom: 10px;">⚙️ Velocidade do Carrossel</h2>
                 <p style="font-size: 14px; color: #a1a1aa; margin-bottom: 15px;">Escolha quanto tempo cada imagem fica na tela antes de passar para a próxima:</p>
@@ -110,7 +107,7 @@
     </main>
 
     <script>
-        const API = window.location.hostname === 'localhost' ? 'http://localhost:3000/api' : '/api';
+        const API = '/api';
 
         document.addEventListener('DOMContentLoaded', function() {
             const formProduto = document.getElementById('formProduto');
@@ -170,18 +167,20 @@
 
         // Salvar nova velocidade do carrossel no backend
         async function salvarVelocidadeCarrossel() {
-            const velocidade = document.getElementById('selectVelocidade').value;
+            const valorVelocidade = document.getElementById('selectVelocidade').value;
             try {
                 const resposta = await fetch(`${API}/configuracoes/carrossel`, {
                     method: 'POST',
                     headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify({ velocidade })
+                    body: JSON.stringify({ velocidade: valorVelocidade })
                 });
+
+                const resultado = await resposta.json();
 
                 if (resposta.ok) {
                     alert('Velocidade do carrossel atualizada com sucesso!');
                 } else {
-                    alert('Erro ao salvar velocidade.');
+                    alert(resultado.error || 'Erro ao salvar velocidade.');
                 }
             } catch (erro) {
                 console.error(erro);
@@ -189,7 +188,7 @@
             }
         }
 
-        // Enviar novo produto para o backend (incluindo o campo de lançamento)
+        // Enviar novo produto para o backend
         async function salvarProduto(e) {
             e.preventDefault();
 
