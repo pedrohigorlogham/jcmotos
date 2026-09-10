@@ -126,13 +126,14 @@ app.get('/api/configuracoes', async (req, res) => {
       .select('*');
 
     if (error) throw error;
-    res.json(data);
+    res.json(data || []);
   } catch (error) {
+    console.error('Erro ao buscar configurações:', error);
     res.status(500).json({ error: 'Erro ao buscar configurações.' });
   }
 });
 
-// Rota para atualizar a velocidade do carrossel no painel admin
+// Rota para atualizar a velocidade do carrossel no painel admin (À prova de falhas)
 app.post('/api/configuracoes/carrossel', async (req, res) => {
   try {
     const { velocidade } = req.body;
@@ -140,13 +141,27 @@ app.post('/api/configuracoes/carrossel', async (req, res) => {
       return res.status(400).json({ error: 'Informe a velocidade.' });
     }
 
-    const { error } = await supabase
+    // 1. Tenta atualizar se o registro já existir
+    const { data: updateData, error: updateError } = await supabase
       .from('configuracoes')
-      .upsert({ chave: 'velocidade_carrossel', valor: String(velocidade) });
+      .update({ valor: String(velocidade) })
+      .eq('chave', 'velocidade_carrossel')
+      .select();
 
-    if (error) throw error;
+    // 2. Se a linha não existia para atualizar, insere uma nova
+    if (!updateData || updateData.length === 0) {
+      const { error: insertError } = await supabase
+        .from('configuracoes')
+        .insert([{ chave: 'velocidade_carrossel', valor: String(velocidade) }]);
+
+      if (insertError) throw insertError;
+    } else if (updateError) {
+      throw updateError;
+    }
+
     res.json({ message: 'Velocidade do carrossel atualizada com sucesso!' });
   } catch (error) {
+    console.error('Erro ao salvar velocidade:', error);
     res.status(500).json({ error: 'Erro ao salvar configuração.' });
   }
 });
