@@ -2,6 +2,7 @@ import express from 'express';
 import cors from 'cors';
 import crypto from 'node:crypto';
 import path from 'node:path';
+import sharp from 'sharp';
 import { createClient } from '@supabase/supabase-js';
 
 const app = express();
@@ -16,20 +17,27 @@ const supabaseUrl = process.env.SUPABASE_URL;
 const supabaseAnonKey = process.env.SUPABASE_ANON_KEY;
 const supabase = createClient(supabaseUrl, supabaseAnonKey);
 
-// Função para salvar a imagem em Base64 no Storage do Supabase
+// Função para salvar e comprimir a imagem em Base64 no Storage do Supabase
 async function salvarImagemSupabase(base64) {
-  const partes = String(base64).match(/^data:image\/(jpeg|png|jpg);base64,(.+)$/);
-  if (!partes) throw new Error('Envie uma imagem JPG, JPEG ou PNG válida.');
+  const partes = String(base64).match(/^data:image\/(jpeg|png|jpg|webp);base64,(.+)$/i);
+  if (!partes) throw new Error('Envie uma imagem JPG, JPEG, PNG ou WEBP válida.');
 
-  const extensao = partes[1];
   const base64Dados = partes[2];
-  const buffer = Buffer.from(base64Dados, 'base64');
-  const nomeArquivo = `capacete-${crypto.randomUUID()}.${extensao}`;
+  const bufferOriginal = Buffer.from(base64Dados, 'base64');
+
+  // Compressão da imagem com o Sharp:
+  // Redimensiona para no máximo 1200px de largura e converte para WebP (80% de qualidade)
+  const bufferComprimido = await sharp(bufferOriginal)
+    .resize({ width: 1200, fit: 'inside', withoutEnlargement: true })
+    .webp({ quality: 80 })
+    .toBuffer();
+
+  const nomeArquivo = `capacete-${crypto.randomUUID()}.webp`;
 
   const { data, error } = await supabase.storage
     .from('imagens-catalago')
-    .upload(nomeArquivo, buffer, {
-      contentType: `image/${extensao}`,
+    .upload(nomeArquivo, bufferComprimido, {
+      contentType: 'image/webp',
       upsert: false
     });
 
