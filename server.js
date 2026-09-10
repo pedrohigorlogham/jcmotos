@@ -25,8 +25,6 @@ async function salvarImagemSupabase(base64) {
   const base64Dados = partes[2];
   const bufferOriginal = Buffer.from(base64Dados, 'base64');
 
-  // Compressão da imagem com o Sharp:
-  // Redimensiona para no máximo 1200px de largura e converte para WebP (80% de qualidade)
   const bufferComprimido = await sharp(bufferOriginal)
     .resize({ width: 1200, fit: 'inside', withoutEnlargement: true })
     .webp({ quality: 80 })
@@ -70,10 +68,10 @@ app.get('/api/produtos', async (req, res) => {
   }
 });
 
-// Rota para cadastrar um novo produto com foto
+// Rota para cadastrar um novo produto (incluindo se é lançamento)
 app.post('/api/produtos', async (req, res) => {
   try {
-    const { nome, preco, imagem } = req.body;
+    const { nome, preco, imagem, lancamento } = req.body;
     if (!nome || !preco || !imagem) {
       return res.status(400).json({ error: 'Preencha todos os campos.' });
     }
@@ -82,7 +80,12 @@ app.post('/api/produtos', async (req, res) => {
 
     const { error } = await supabase
       .from('produtos')
-      .insert([{ nome, preco, imagem_url: fotoPublicUrl }]);
+      .insert([{ 
+        nome, 
+        preco, 
+        imagem_url: fotoPublicUrl,
+        lancamento: lancamento === true || lancamento === 'true'
+      }]);
 
     if (error) throw error;
     res.status(201).json({ message: 'Produto cadastrado com sucesso!' });
@@ -112,6 +115,39 @@ app.delete('/api/produtos/:id', async (req, res) => {
   } catch (error) {
     console.error('Erro no servidor ao tentar deletar:', error);
     res.status(500).json({ error: 'Erro de comunicação no servidor ao excluir.' });
+  }
+});
+
+// Rota para buscar as configurações do site (como velocidade do carrossel)
+app.get('/api/configuracoes', async (req, res) => {
+  try {
+    const { data, error } = await supabase
+      .from('configuracoes')
+      .select('*');
+
+    if (error) throw error;
+    res.json(data);
+  } catch (error) {
+    res.status(500).json({ error: 'Erro ao buscar configurações.' });
+  }
+});
+
+// Rota para atualizar a velocidade do carrossel no painel admin
+app.post('/api/configuracoes/carrossel', async (req, res) => {
+  try {
+    const { velocidade } = req.body;
+    if (!velocidade) {
+      return res.status(400).json({ error: 'Informe a velocidade.' });
+    }
+
+    const { error } = await supabase
+      .from('configuracoes')
+      .upsert({ chave: 'velocidade_carrossel', valor: String(velocidade) });
+
+    if (error) throw error;
+    res.json({ message: 'Velocidade do carrossel atualizada com sucesso!' });
+  } catch (error) {
+    res.status(500).json({ error: 'Erro ao salvar configuração.' });
   }
 });
 
