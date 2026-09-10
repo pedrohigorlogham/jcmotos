@@ -14,15 +14,22 @@
         h1, h2 { margin-top: 0; }
         form { display: flex; flex-direction: column; gap: 16px; margin-bottom: 30px; }
         label { font-weight: bold; font-size: 14px; }
-        input[type="text"], input[type="file"] { width: 100%; padding: 10px; background: #27272a; border: 1px solid #3f3f46; color: #fff; border-radius: 4px; }
-        button[type="submit"] { background: #800d0d; color: #fff; border: none; padding: 12px; font-weight: bold; cursor: pointer; border-radius: 4px; }
-        button[type="submit"]:hover { background: #a11212; }
+        input[type="text"], input[type="file"], select { width: 100%; padding: 10px; background: #27272a; border: 1px solid #3f3f46; color: #fff; border-radius: 4px; }
+        button[type="submit"], .btn-secundario { background: #800d0d; color: #fff; border: none; padding: 12px; font-weight: bold; cursor: pointer; border-radius: 4px; }
+        button[type="submit"]:hover, .btn-secundario:hover { background: #a11212; }
+        .btn-verde { background: #00aa55; color: #fff; }
+        .btn-verde:hover { background: #00cc66; }
         table { width: 100%; border-collapse: collapse; margin-top: 16px; }
         th, td { text-align: left; padding: 12px; border-bottom: 1px solid #27272a; vertical-align: middle; }
         th { background: #1f1f23; }
         img.thumb { width: 50px; height: 50px; object-fit: cover; border-radius: 4px; }
         .btn-delete { background: #dc2626; color: white; border: none; padding: 6px 12px; border-radius: 4px; cursor: pointer; font-weight: bold; }
         .btn-delete:hover { background: #ef4444; }
+        
+        /* Estilos adicionados para a opção de lançamento e velocidade */
+        .check-lancamento { display: flex; align-items: center; gap: 10px; background: #1f1f23; padding: 12px; border-radius: 6px; border: 1px solid #00ff88; cursor: pointer; }
+        .check-lancamento input { width: 20px; height: 20px; cursor: pointer; }
+        .badge-table { background: #00ff88; color: #000; font-weight: bold; padding: 2px 6px; border-radius: 4px; font-size: 11px; }
     </style>
 </head>
 <body>
@@ -56,8 +63,31 @@
                     <input type="file" id="imagemProduto" accept="image/*" required>
                 </div>
 
+                <!-- 1. Opção para marcar o produto como lançamento -->
+                <div class="check-lancamento">
+                    <input type="checkbox" id="lancamentoProduto">
+                    <label for="lancamentoProduto" style="color: #00ff88; cursor: pointer;">
+                        ⭐ Marcar este produto como LANÇAMENTO (Destaque e Carrossel)
+                    </label>
+                </div>
+
                 <button type="submit">Salvar Item no Catálogo</button>
             </form>
+
+            <!-- 2. Bloco para configurar a velocidade do carrossel -->
+            <div style="background: #1c1c21; padding: 20px; border-radius: 8px; border: 1px solid #27272a; margin-bottom: 30px;">
+                <h2 style="margin-bottom: 10px;">⚙️ Velocidade do Carrossel</h2>
+                <p style="font-size: 14px; color: #a1a1aa; margin-bottom: 15px;">Escolha quanto tempo cada imagem fica na tela antes de passar para a próxima:</p>
+                <div style="display: flex; gap: 10px; align-items: center;">
+                    <select id="selectVelocidade">
+                        <option value="3000">Rápido (3 segundos)</option>
+                        <option value="5000">Médio (5 segundos)</option>
+                        <option value="7000">Devagar (7 segundos)</option>
+                        <option value="10000">Muito Devagar (10 segundos)</option>
+                    </select>
+                    <button type="button" class="btn-secundario btn-verde" onclick="salvarVelocidadeCarrossel()" style="white-space: nowrap;">Salvar Velocidade</button>
+                </div>
+            </div>
 
             <h2>Produtos cadastrados</h2>
             <div class="tabela-wrap">
@@ -67,11 +97,12 @@
                             <th>Imagem</th>
                             <th>Marca / Modelo</th>
                             <th>Preço</th>
+                            <th style="text-align: center;">Lançamento</th>
                             <th style="text-align: center;">Ações</th>
                         </tr>
                     </thead>
                     <tbody id="corpoTabela">
-                        <tr><td colspan="4" style="text-align:center;">Carregando produtos...</td></tr>
+                        <tr><td colspan="5" style="text-align:center;">Carregando produtos...</td></tr>
                     </tbody>
                 </table>
             </div>
@@ -87,6 +118,7 @@
                 formProduto.addEventListener('submit', salvarProduto);
             }
             carregarProdutos();
+            carregarVelocidadeAtual();
         });
 
         // Buscar e exibir produtos cadastrados
@@ -97,7 +129,7 @@
                 const produtos = await resposta.json();
 
                 if (!Array.isArray(produtos) || produtos.length === 0) {
-                    corpoTabela.innerHTML = '<tr><td colspan="4" style="text-align:center;">Nenhum produto cadastrado.</td></tr>';
+                    corpoTabela.innerHTML = '<tr><td colspan="5" style="text-align:center;">Nenhum produto cadastrado.</td></tr>';
                     return;
                 }
 
@@ -107,22 +139,63 @@
                         <td>${p.nome}</td>
                         <td>R$ ${p.preco}</td>
                         <td style="text-align: center;">
+                            ${p.lancamento ? '<span class="badge-table">SIM</span>' : '<span style="color:#666;">Não</span>'}
+                        </td>
+                        <td style="text-align: center;">
                             <button class="btn-delete" onclick="excluirProduto('${p.id}')">Excluir</button>
                         </td>
                     </tr>
                 `).join('');
             } catch (erro) {
                 console.error(erro);
-                corpoTabela.innerHTML = '<tr><td colspan="4" style="text-align:center; color:red;">Erro ao carregar itens do banco de dados.</td></tr>';
+                corpoTabela.innerHTML = '<tr><td colspan="5" style="text-align:center; color:red;">Erro ao carregar itens do banco de dados.</td></tr>';
             }
         }
 
-        // Enviar novo produto para o backend
+        // Buscar velocidade configurada no banco e preencher no menu
+        async function carregarVelocidadeAtual() {
+            try {
+                const resposta = await fetch(`${API}/configuracoes`);
+                const configs = await resposta.json();
+                if (Array.isArray(configs)) {
+                    const itemVelocidade = configs.find(c => c.chave === 'velocidade_carrossel');
+                    if (itemVelocidade) {
+                        document.getElementById('selectVelocidade').value = itemVelocidade.valor;
+                    }
+                }
+            } catch (erro) {
+                console.error('Erro ao carregar velocidade:', erro);
+            }
+        }
+
+        // Salvar nova velocidade do carrossel no backend
+        async function salvarVelocidadeCarrossel() {
+            const velocidade = document.getElementById('selectVelocidade').value;
+            try {
+                const resposta = await fetch(`${API}/configuracoes/carrossel`, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ velocidade })
+                });
+
+                if (resposta.ok) {
+                    alert('Velocidade do carrossel atualizada com sucesso!');
+                } else {
+                    alert('Erro ao salvar velocidade.');
+                }
+            } catch (erro) {
+                console.error(erro);
+                alert('Erro de comunicação ao salvar velocidade.');
+            }
+        }
+
+        // Enviar novo produto para o backend (incluindo o campo de lançamento)
         async function salvarProduto(e) {
             e.preventDefault();
 
             const nome = document.getElementById('nomeProduto').value;
             const preco = document.getElementById('precoProduto').value;
+            const lancamento = document.getElementById('lancamentoProduto').checked;
             const imagemInput = document.getElementById('imagemProduto');
 
             if (!imagemInput.files || imagemInput.files.length === 0) {
@@ -135,7 +208,7 @@
                 const resposta = await fetch(`${API}/produtos`, {
                     method: 'POST',
                     headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify({ nome, preco, imagem: imagemBase64 })
+                    body: JSON.stringify({ nome, preco, imagem: imagemBase64, lancamento })
                 });
 
                 const resultado = await resposta.json();
