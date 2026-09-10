@@ -217,7 +217,8 @@
         .produtos-carrossel { overflow: hidden; mask-image: linear-gradient(to right, transparent, #000 5%, #000 95%, transparent); }
         .produtos-carrossel__faixa { display: flex; gap: 18px; width: max-content; animation: deslizarProdutos 36s linear infinite; padding: 4px 9px; }
         .produtos-carrossel:hover .produtos-carrossel__faixa { animation-play-state: paused; }
-        .produto-home { display: block; width: 242px; overflow: hidden; border: 1px solid #27272a; border-radius: 12px; background: #18181b; color: #fff; text-decoration: none; transition: transform .2s, border-color .2s; }
+        
+        .produto-home { position: relative; display: block; width: 242px; overflow: hidden; border: 1px solid #27272a; border-radius: 12px; background: #18181b; color: #fff; text-decoration: none; transition: transform .2s, border-color .2s; }
         .produto-home:hover { transform: translateY(-5px); border-color: #dc2626; }
         .produto-home img { display: block; width: 100%; height: 155px; object-fit: cover; background: #27272a; }
         .produto-home div { padding: 14px; }
@@ -225,6 +226,28 @@
         .produto-home strong { white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
         .produto-home span { margin-top: 6px; color: #f87171; font-weight: 800; }
         .produtos-home__vazio { color: #a1a1aa; text-align: center; width: 100%; }
+
+        /* --- NOVOS ESTILOS PARA PRODUTOS EM LANÇAMENTO (Luz verde e Tag) --- */
+        .card-lancamento {
+            border: 2px solid #00ff88 !important;
+            box-shadow: 0 0 18px rgba(0, 255, 136, 0.45) !important;
+        }
+        .badge-lancamento {
+            position: absolute;
+            top: 10px;
+            right: 10px;
+            background-color: #00ff88;
+            color: #000000;
+            font-weight: 900;
+            font-size: 10px;
+            padding: 3px 8px;
+            border-radius: 10px;
+            box-shadow: 0 0 10px rgba(0, 255, 136, 0.8);
+            z-index: 5;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
         @keyframes deslizarProdutos { to { transform: translateX(calc(-50% - 9px)); } }
         @media (prefers-reduced-motion: reduce) { .produtos-carrossel__faixa { animation: none; } }
         @media (max-width: 767px) {
@@ -403,7 +426,7 @@
       async function carregarVitrineInicial() {
         const faixa = document.getElementById('faixaProdutos');
         try {
-          // Rota ajustada para /api/produtos
+          // Busca os produtos
           const resposta = await fetch('/api/produtos');
           if (!resposta.ok) throw new Error('Falha ao carregar catálogo');
           const produtos = await resposta.json();
@@ -413,22 +436,51 @@
             return; 
           }
 
+          // Ajusta a velocidade do carrossel conforme salvo no banco
+          aplicarVelocidadeCarrossel();
+
           // Duplica a lista para o efeito infinito do carrossel deslizar sem falhas
           const itens = produtos.length < 5 ? [...produtos, ...produtos, ...produtos] : [...produtos, ...produtos];
 
-          faixa.innerHTML = itens.map(produto => `
-            <a class="produto-home" href="catalogo.html">
-              <img src="${escaparHtml(produto.imagem_url)}" alt="${escaparHtml(produto.nome)}">
-              <div>
-                <strong>${escaparHtml(produto.nome)}</strong>
-                <span>R$ ${escaparHtml(produto.preco)}</span>
-              </div>
-            </a>
-          `).join('');
+          faixa.innerHTML = itens.map(produto => {
+            const eLancamento = produto.lancamento === true;
+            const classeLancamento = eLancamento ? 'card-lancamento' : '';
+            const tagLancamento = eLancamento ? '<span class="badge-lancamento">Lançamento</span>' : '';
+
+            return `
+              <a class="produto-home ${classeLancamento}" href="catalogo.html">
+                ${tagLancamento}
+                <img src="${escaparHtml(produto.imagem_url)}" alt="${escaparHtml(produto.nome)}">
+                <div>
+                  <strong>${escaparHtml(produto.nome)}</strong>
+                  <span>R$ ${escaparHtml(produto.preco)}</span>
+                </div>
+              </a>
+            `;
+          }).join('');
 
         } catch (erro) { 
           console.error(erro);
           faixa.innerHTML = '<p class="produtos-home__vazio">Não foi possível carregar os produtos agora.</p>'; 
+        }
+      }
+
+      // Função que busca a velocidade do carrossel e ajusta o CSS dinamicamente
+      async function aplicarVelocidadeCarrossel() {
+        try {
+          const res = await fetch('/api/configuracoes');
+          if (!res.ok) return;
+          const configs = await res.json();
+          const configVelocidade = configs.find(c => c.chave === 'velocidade_carrossel');
+          if (configVelocidade && configVelocidade.valor) {
+            const segundos = parseInt(configVelocidade.valor) / 1000;
+            const faixa = document.getElementById('faixaProdutos');
+            if (faixa) {
+              faixa.style.animationDuration = `${segundos * 6}s`;
+            }
+          }
+        } catch (e) {
+          console.error('Erro ao aplicar velocidade:', e);
         }
       }
 
