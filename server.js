@@ -133,7 +133,7 @@ app.get('/api/configuracoes', async (req, res) => {
   }
 });
 
-// Rota para atualizar a velocidade do carrossel no painel admin (À prova de falhas)
+// Rota para atualizar a velocidade do carrossel no painel admin
 app.post('/api/configuracoes/carrossel', async (req, res) => {
   try {
     const { velocidade } = req.body;
@@ -141,14 +141,12 @@ app.post('/api/configuracoes/carrossel', async (req, res) => {
       return res.status(400).json({ error: 'Informe a velocidade.' });
     }
 
-    // 1. Tenta atualizar se o registro já existir
     const { data: updateData, error: updateError } = await supabase
       .from('configuracoes')
       .update({ valor: String(velocidade) })
       .eq('chave', 'velocidade_carrossel')
       .select();
 
-    // 2. Se a linha não existia para atualizar, insere uma nova
     if (!updateData || updateData.length === 0) {
       const { error: insertError } = await supabase
         .from('configuracoes')
