@@ -12,12 +12,12 @@ app.use(express.urlencoded({ limit: '50mb', extended: true }));
 app.use(cors());
 app.use(express.static(process.cwd()));
 
-// Inicializa o cliente do Supabase usando as variáveis seguras do Render
+// Inicializa o cliente do Supabase
 const supabaseUrl = process.env.SUPABASE_URL;
 const supabaseAnonKey = process.env.SUPABASE_ANON_KEY;
 const supabase = createClient(supabaseUrl, supabaseAnonKey);
 
-// Função para salvar e comprimir a imagem em Base64 no Storage do Supabase
+// Função para salvar e comprimir a imagem em Base64 no Storage
 async function salvarImagemSupabase(base64) {
   const partes = String(base64).match(/^data:image\/(jpeg|png|jpg|webp);base64,(.+)$/i);
   if (!partes) throw new Error('Envie uma imagem JPG, JPEG, PNG ou WEBP válida.');
@@ -48,31 +48,18 @@ async function salvarImagemSupabase(base64) {
   return publicUrlData.publicUrl;
 }
 
-// Atalho /admin que redireciona para a página painel.html
+// Atalho /admin para o painel
 app.get('/admin', (req, res) => {
   res.sendFile(path.join(process.cwd(), 'painel.html'));
 });
 
-// Rota OTIMIZADA para buscar os produtos do catálogo com paginação e limite
+// Rota de busca de produtos (com suporte a paginação E busca completa)
 app.get('/api/produtos', async (req, res) => {
   try {
-    const page = parseInt(req.query.page, 10);
-    const limit = parseInt(req.query.limit, 10);
+    const page = req.query.page ? parseInt(req.query.page, 10) : null;
+    const limit = req.query.limit ? parseInt(req.query.limit, 10) : null;
 
-    // Se NÃO for informada paginação (page/limit), mas for requisitado via limit puro (ex: carrossel da home)
-    if (!page && limit) {
-      const { data, error } = await supabase
-        .from('produtos')
-        .select('*')
-        .order('lancamento', { ascending: false })
-        .order('id', { ascending: false })
-        .limit(limit);
-
-      if (error) throw error;
-      return res.json(data);
-    }
-
-    // Se a requisição pedir paginação explícita (ex: catálogo ou admin)
+    // Se houver paginação explícita
     if (page && limit) {
       const from = (page - 1) * limit;
       const to = from + limit - 1;
@@ -87,22 +74,34 @@ app.get('/api/produtos', async (req, res) => {
       if (error) throw error;
 
       return res.json({
-        produtos: data,
-        total: count,
+        produtos: data || [],
+        total: count || 0,
         page,
-        totalPages: Math.ceil(count / limit)
+        totalPages: Math.ceil((count || 0) / limit)
       });
     }
 
-    // Fallback: Se nenhuma opção for enviada, retorna por padrão os 20 mais recentes (evita mandar a lista completa e estourar a cota)
+    // Se houver apenas limite
+    if (limit) {
+      const { data, error } = await supabase
+        .from('produtos')
+        .select('*')
+        .order('lancamento', { ascending: false })
+        .order('id', { ascending: false })
+        .limit(limit);
+
+      if (error) throw error;
+      return res.json(data || []);
+    }
+
+    // Busca padrão: Retorna TODOS os produtos sem limitação
     const { data, error } = await supabase
       .from('produtos')
       .select('*')
-      .order('id', { ascending: false })
-      .limit(20);
+      .order('id', { ascending: false });
 
     if (error) throw error;
-    res.json(data);
+    res.json(data || []);
 
   } catch (error) {
     console.error('Erro ao buscar produtos:', error);
@@ -110,7 +109,7 @@ app.get('/api/produtos', async (req, res) => {
   }
 });
 
-// Rota para cadastrar um novo produto (incluindo se é lançamento)
+// Cadastrar novo produto
 app.post('/api/produtos', async (req, res) => {
   try {
     const { nome, preco, imagem, lancamento } = req.body;
@@ -137,7 +136,7 @@ app.post('/api/produtos', async (req, res) => {
   }
 });
 
-// Rota para deletar um produto pelo ID
+// Deletar produto por ID
 app.delete('/api/produtos/:id', async (req, res) => {
   try {
     const { id } = req.params;
@@ -160,7 +159,7 @@ app.delete('/api/produtos/:id', async (req, res) => {
   }
 });
 
-// Rota para buscar as configurações do site (como velocidade do carrossel)
+// Configurações
 app.get('/api/configuracoes', async (req, res) => {
   try {
     const { data, error } = await supabase
@@ -178,7 +177,7 @@ app.get('/api/configuracoes', async (req, res) => {
   }
 });
 
-// Rota para atualizar a velocidade do carrossel no painel admin (usando Upsert)
+// Atualizar carrossel
 app.post('/api/configuracoes/carrossel', async (req, res) => {
   try {
     const { velocidade } = req.body;
@@ -205,7 +204,7 @@ app.post('/api/configuracoes/carrossel', async (req, res) => {
   }
 });
 
-// Rota de login por senha mestra
+// Login
 app.post('/api/login', (req, res) => {
   try {
     const { senha } = req.body;
