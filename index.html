@@ -426,8 +426,8 @@
       async function carregarVitrineInicial() {
         const faixa = document.getElementById('faixaProdutos');
         try {
-          // Busca os produtos
-          const resposta = await fetch('/api/produtos');
+          // Busca apenas os primeiros 10 produtos para não estourar a cota de dados do Supabase
+          const resposta = await fetch('/api/produtos?limit=10');
           if (!resposta.ok) throw new Error('Falha ao carregar catálogo');
           const produtos = await resposta.json();
 
@@ -450,7 +450,7 @@
             return `
               <a class="produto-home ${classeLancamento}" href="catalogo.html">
                 ${tagLancamento}
-                <img src="${escaparHtml(produto.imagem_url)}" alt="${escaparHtml(produto.nome)}">
+                <img src="${escaparHtml(produto.imagem_url)}" alt="${escaparHtml(produto.nome)}" loading="lazy">
                 <div>
                   <strong>${escaparHtml(produto.nome)}</strong>
                   <span>R$ ${escaparHtml(produto.preco)}</span>
