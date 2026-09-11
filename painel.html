@@ -29,12 +29,6 @@
         .check-lancamento { display: flex; align-items: center; gap: 10px; background: #1f1f23; padding: 12px; border-radius: 6px; border: 1px solid #00ff88; cursor: pointer; }
         .check-lancamento input { width: 20px; height: 20px; cursor: pointer; }
         .badge-table { background: #00ff88; color: #000; font-weight: bold; padding: 2px 6px; border-radius: 4px; font-size: 11px; }
-
-        /* Controles de Paginação na Tabela */
-        .paginacao-admin { display: flex; justify-content: center; align-items: center; gap: 12px; margin-top: 20px; }
-        .btn-pag-admin { background: #27272a; color: #fff; border: 1px solid #3f3f46; padding: 8px 16px; border-radius: 4px; cursor: pointer; font-weight: bold; }
-        .btn-pag-admin:hover:not(:disabled) { background: #800d0d; }
-        .btn-pag-admin:disabled { opacity: 0.4; cursor: not-allowed; }
     </style>
 </head>
 <body>
@@ -109,21 +103,11 @@
                     </tbody>
                 </table>
             </div>
-
-            <!-- NAVEGAÇÃO DA TABELA DO ADMIN -->
-            <div class="paginacao-admin" id="paginacaoAdmin" style="display: none;">
-                <button class="btn-pag-admin" id="btnAdminAnt" onclick="mudarPaginaAdmin(-1)">← Anterior</button>
-                <span id="infoAdminPag" style="font-size: 14px; color: #a1a1aa;">Página 1</span>
-                <button class="btn-pag-admin" id="btnAdminProx" onclick="mudarPaginaAdmin(1)">Próximo →</button>
-            </div>
         </section>
     </main>
 
     <script>
         const API = '/api';
-        let paginaAtualAdmin = 1;
-        const limitePorPagina = 10;
-        let totalPaginasAdmin = 1;
 
         const escaparHtml = texto => String(texto ?? '').replace(/[&<>"']/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' })[c]);
 
@@ -132,26 +116,22 @@
             if (formProduto) {
                 formProduto.addEventListener('submit', salvarProduto);
             }
-            carregarProdutos(1);
+            carregarProdutos();
             carregarVelocidadeAtual();
         });
 
-        // Buscar e exibir produtos cadastrados (Paginado)
-        async function carregarProdutos(pagina = 1) {
+        // Buscar e exibir todos os produtos cadastrados
+        async function carregarProdutos() {
             const corpoTabela = document.getElementById('corpoTabela');
-            const paginacaoAdminBox = document.getElementById('paginacaoAdmin');
-
             try {
-                const resposta = await fetch(`${API}/produtos?page=${pagina}&limit=${limitePorPagina}`);
-                const resultado = await resposta.json();
+                const resposta = await fetch(`${API}/produtos`);
+                const dados = await resposta.json();
 
-                const produtos = resultado.produtos || (Array.isArray(resultado) ? resultado : []);
-                totalPaginasAdmin = resultado.totalPages || 1;
-                paginaAtualAdmin = pagina;
+                // Aceita tanto array simples quanto resposta paginada
+                const produtos = Array.isArray(dados) ? dados : (dados.produtos || []);
 
                 if (produtos.length === 0) {
                     corpoTabela.innerHTML = '<tr><td colspan="5" style="text-align:center;">Nenhum produto cadastrado.</td></tr>';
-                    paginacaoAdminBox.style.display = 'none';
                     return;
                 }
 
@@ -168,30 +148,13 @@
                         </td>
                     </tr>
                 `).join('');
-
-                if (totalPaginasAdmin > 1) {
-                    paginacaoAdminBox.style.display = 'flex';
-                    document.getElementById('infoAdminPag').textContent = `Página ${paginaAtualAdmin} de ${totalPaginasAdmin}`;
-                    document.getElementById('btnAdminAnt').disabled = (paginaAtualAdmin <= 1);
-                    document.getElementById('btnAdminProx').disabled = (paginaAtualAdmin >= totalPaginasAdmin);
-                } else {
-                    paginacaoAdminBox.style.display = 'none';
-                }
-
             } catch (erro) {
                 console.error(erro);
                 corpoTabela.innerHTML = '<tr><td colspan="5" style="text-align:center; color:red;">Erro ao carregar itens do banco de dados.</td></tr>';
             }
         }
 
-        function mudarPaginaAdmin(direcao) {
-            const novaPagina = paginaAtualAdmin + direcao;
-            if (novaPagina >= 1 && novaPagina <= totalPaginasAdmin) {
-                carregarProdutos(novaPagina);
-            }
-        }
-
-        // Buscar velocidade configurada no banco e preencher no menu
+        // Buscar velocidade configurada no banco
         async function carregarVelocidadeAtual() {
             try {
                 const resposta = await fetch(`${API}/configuracoes`);
@@ -207,7 +170,7 @@
             }
         }
 
-        // Salvar nova velocidade do carrossel no backend
+        // Salvar nova velocidade do carrossel
         async function salvarVelocidadeCarrossel() {
             const valorVelocidade = document.getElementById('selectVelocidade').value;
             try {
@@ -257,7 +220,7 @@
                 if (resposta.ok) {
                     alert('Capacete cadastrado com sucesso!');
                     document.getElementById('formProduto').reset();
-                    carregarProdutos(1);
+                    carregarProdutos();
                 } else {
                     alert(resultado.error || 'Erro ao tentar salvar o item.');
                 }
@@ -278,7 +241,7 @@
 
                 if (resposta.ok) {
                     alert('Produto excluído com sucesso!');
-                    carregarProdutos(paginaAtualAdmin);
+                    carregarProdutos();
                 } else {
                     const resultado = await resposta.json();
                     alert(resultado.error || 'Erro ao excluir o produto.');
@@ -289,7 +252,7 @@
             }
         }
 
-        // Converter arquivo de imagem em Base64
+        // Converter imagem para Base64
         function converterParaBase64(file) {
             return new Promise((resolve, reject) => {
                 const reader = new FileReader();
