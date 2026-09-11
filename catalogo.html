@@ -159,6 +159,38 @@
             font-size: 18px;
         }
 
+        /* Paginação Estilizada */
+        .paginacao-container {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            gap: 16px;
+            margin-top: 40px;
+        }
+        .btn-pagina {
+            background-color: #18181b;
+            color: #ffffff;
+            border: 1px solid #27272a;
+            padding: 10px 20px;
+            border-radius: 8px;
+            font-weight: 700;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+        .btn-pagina:hover:not(:disabled) {
+            background-color: #dc2626;
+            border-color: #dc2626;
+        }
+        .btn-pagina:disabled {
+            opacity: 0.4;
+            cursor: not-allowed;
+        }
+        .info-pagina {
+            color: #a1a1aa;
+            font-weight: 700;
+            font-size: 15px;
+        }
+
         /* Rodapé */
         footer {
             background-color: #000000;
@@ -200,6 +232,13 @@
         <div class="produtos-grid" id="gridProdutos">
             <p class="mensagem-status">Carregando catálogo...</p>
         </div>
+
+        <!-- CONTROLES DE PAGINAÇÃO -->
+        <div class="paginacao-container" id="controlesPaginacao" style="display: none;">
+            <button class="btn-pagina" id="btnAnterior" onclick="mudarPagina(-1)">← Anterior</button>
+            <span class="info-pagina" id="infoPagina">Página 1 de 1</span>
+            <button class="btn-pagina" id="btnProximo" onclick="mudarPagina(1)">Próximo →</button>
+        </div>
     </main>
 
     <!-- RODAPÉ -->
@@ -210,17 +249,29 @@
     <script>
         const escaparHtml = texto => String(texto ?? '').replace(/[&<>"']/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' })[c]);
 
-        async function carregarCatalogo() {
+        let paginaAtual = 1;
+        const itensPorPagina = 12;
+        let totalPaginasGlobal = 1;
+
+        async function carregarCatalogo(pagina = 1) {
             const grid = document.getElementById('gridProdutos');
+            const paginacaoBox = document.getElementById('controlesPaginacao');
+            
+            grid.innerHTML = '<p class="mensagem-status">Carregando catálogo...</p>';
+
             try {
-                // Rota atualizada para /api/produtos
-                const resposta = await fetch('/api/produtos');
+                // Requisição paginada para o backend
+                const resposta = await fetch(`/api/produtos?page=${pagina}&limit=${itensPorPagina}`);
                 if (!resposta.ok) throw new Error('Falha ao conectar com o servidor');
                 
-                const produtos = await resposta.json();
+                const resultado = await resposta.json();
+                const produtos = resultado.produtos || resultado; // Suporte para retorno paginado
+                totalPaginasGlobal = resultado.totalPages || 1;
+                paginaAtual = pagina;
 
                 if (!produtos || produtos.length === 0) {
                     grid.innerHTML = '<p class="mensagem-status">Nenhum produto cadastrado no momento.</p>';
+                    paginacaoBox.style.display = 'none';
                     return;
                 }
 
@@ -230,7 +281,7 @@
 
                     return `
                         <div class="produto-card">
-                            <img src="${escaparHtml(p.imagem_url)}" alt="${escaparHtml(p.nome)}" onerror="this.src='https://via.placeholder.com/300x200?text=Sem+Imagem'">
+                            <img src="${escaparHtml(p.imagem_url)}" alt="${escaparHtml(p.nome)}" loading="lazy" onerror="this.src='https://via.placeholder.com/300x200?text=Sem+Imagem'">
                             <div class="produto-info">
                                 <div>
                                     <div class="produto-nome">${escaparHtml(p.nome)}</div>
@@ -244,13 +295,31 @@
                     `;
                 }).join('');
 
+                // Atualiza e exibe os botões de paginação se houver mais de 1 página
+                if (totalPaginasGlobal > 1) {
+                    paginacaoBox.style.display = 'flex';
+                    document.getElementById('infoPagina').textContent = `Página ${paginaAtual} de ${totalPaginasGlobal}`;
+                    document.getElementById('btnAnterior').disabled = (paginaAtual <= 1);
+                    document.getElementById('btnProximo').disabled = (paginaAtual >= totalPaginasGlobal);
+                } else {
+                    paginacaoBox.style.display = 'none';
+                }
+
             } catch (erro) {
                 console.error('Erro ao carregar produtos:', erro);
                 grid.innerHTML = '<p class="mensagem-status">Erro ao carregar os produtos. Verifique se o servidor está ativo.</p>';
             }
         }
 
-        carregarCatalogo();
+        function mudarPagina(direcao) {
+            const novaPagina = paginaAtual + direcao;
+            if (novaPagina >= 1 && novaPagina <= totalPaginasGlobal) {
+                carregarCatalogo(novaPagina);
+                window.scrollTo({ top: 0, behavior: 'smooth' });
+            }
+        }
+
+        carregarCatalogo(1);
     </script>
 </body>
 </html>
