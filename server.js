@@ -50,7 +50,7 @@ app.get('/admin', (req, res) => {
   res.sendFile(path.join(process.cwd(), 'painel.html'));
 });
 
-// Busca de produtos adaptada
+// Busca de produtos ordenada com lancamentos no topo
 app.get('/api/produtos', async (req, res) => {
   try {
     const page = req.query.page ? parseInt(req.query.page, 10) : null;
@@ -63,6 +63,7 @@ app.get('/api/produtos', async (req, res) => {
       const { data, error, count } = await supabase
         .from('produtos')
         .select('*', { count: 'exact' })
+        .order('lancamento', { ascending: false, nullsFirst: false })
         .order('id', { ascending: false })
         .range(from, to);
 
@@ -80,6 +81,7 @@ app.get('/api/produtos', async (req, res) => {
       const { data, error } = await supabase
         .from('produtos')
         .select('*')
+        .order('lancamento', { ascending: false, nullsFirst: false })
         .order('id', { ascending: false })
         .limit(limit);
 
@@ -90,6 +92,7 @@ app.get('/api/produtos', async (req, res) => {
     const { data, error } = await supabase
       .from('produtos')
       .select('*')
+      .order('lancamento', { ascending: false, nullsFirst: false })
       .order('id', { ascending: false });
 
     if (error) throw error;
@@ -101,7 +104,7 @@ app.get('/api/produtos', async (req, res) => {
   }
 });
 
-// Salvar produto (tenta com lancamento; se der erro de coluna, salva sem ele)
+// Salvar produto com tratamento de lancamento
 app.post('/api/produtos', async (req, res) => {
   try {
     const { nome, preco, imagem, lancamento } = req.body;
@@ -110,18 +113,18 @@ app.post('/api/produtos', async (req, res) => {
     }
 
     const fotoPublicUrl = await salvarImagemSupabase(imagem);
+    const isLancamento = lancamento === true || lancamento === 'true' || lancamento === 1;
 
-    // Tenta inserir com o campo lancamento
+    // Inserção com campo de lançamento ativo
     const { error } = await supabase
       .from('produtos')
       .insert([{ 
         nome, 
         preco, 
         imagem_url: fotoPublicUrl,
-        lancamento: lancamento === true || lancamento === 'true'
+        lancamento: isLancamento
       }]);
 
-    // Se o Supabase reclamar que a coluna nao existe, salva apenas os campos padrao
     if (error && error.message && error.message.includes('lancamento')) {
       const { error: errorFallback } = await supabase
         .from('produtos')
@@ -161,7 +164,7 @@ app.delete('/api/produtos/:id', async (req, res) => {
   }
 });
 
-// Configuracoes seguras (retorna padrao se nao existir a tabela)
+// Configuracoes seguras
 app.get('/api/configuracoes', async (req, res) => {
   try {
     const { data, error } = await supabase
