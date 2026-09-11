@@ -53,15 +53,57 @@ app.get('/admin', (req, res) => {
   res.sendFile(path.join(process.cwd(), 'painel.html'));
 });
 
-// Rota para buscar os produtos do catálogo do Supabase
+// Rota OTIMIZADA para buscar os produtos do catálogo com paginação e limite
 app.get('/api/produtos', async (req, res) => {
   try {
+    const page = parseInt(req.query.page, 10);
+    const limit = parseInt(req.query.limit, 10);
+
+    // Se NÃO for informada paginação (page/limit), mas for requisitado via limit puro (ex: carrossel da home)
+    if (!page && limit) {
+      const { data, error } = await supabase
+        .from('produtos')
+        .select('*')
+        .order('lancamento', { ascending: false })
+        .order('id', { ascending: false })
+        .limit(limit);
+
+      if (error) throw error;
+      return res.json(data);
+    }
+
+    // Se a requisição pedir paginação explícita (ex: catálogo ou admin)
+    if (page && limit) {
+      const from = (page - 1) * limit;
+      const to = from + limit - 1;
+
+      const { data, error, count } = await supabase
+        .from('produtos')
+        .select('*', { count: 'exact' })
+        .order('lancamento', { ascending: false })
+        .order('id', { ascending: false })
+        .range(from, to);
+
+      if (error) throw error;
+
+      return res.json({
+        produtos: data,
+        total: count,
+        page,
+        totalPages: Math.ceil(count / limit)
+      });
+    }
+
+    // Fallback: Se nenhuma opção for enviada, retorna por padrão os 20 mais recentes (evita mandar a lista completa e estourar a cota)
     const { data, error } = await supabase
       .from('produtos')
-      .select('*');
+      .select('*')
+      .order('id', { ascending: false })
+      .limit(20);
 
     if (error) throw error;
     res.json(data);
+
   } catch (error) {
     console.error('Erro ao buscar produtos:', error);
     res.status(500).json({ error: 'Erro ao buscar o catálogo.' });
